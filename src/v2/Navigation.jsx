@@ -23,6 +23,7 @@ const CommandsPage = lazy(() => import('./pages/commands/CommandsPage'));
 const EquipmentPage = lazy(() => import('./pages/equipment/EquipmentPage'));
 const DashboardPage = lazy(() => import('./pages/dashboard/DashboardPage'));
 const ReportsPage = lazy(() => import('./pages/reports/ReportsPage'));
+const UsersPage = lazy(() => import('./pages/users/UsersPage'));
 
 const pages = {
   companies: <CompaniesPage />,
@@ -33,6 +34,7 @@ const pages = {
   equipment: <EquipmentPage />,
   dashboard: <DashboardPage />,
   reports: <ReportsPage />,
+  users: <UsersPage />,
 };
 
 const Navigation = () => {

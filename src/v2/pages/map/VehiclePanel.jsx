@@ -203,7 +203,11 @@ const VehiclePanel = ({ device, position, onClose, onCenter }) => {
             {t('commandsAction')}
           </Button>
         )}
-        <Button size="small" startIcon={<HistoryIcon />} disabled>
+        <Button
+          size="small"
+          startIcon={<HistoryIcon />}
+          onClick={() => navigate(`/history?deviceId=${device.id}`)}
+        >
           {t('historyAction')}
         </Button>
       </div>

@@ -8,6 +8,7 @@ import App from './App';
 import RoleRoute from './common/RoleRoute';
 import HomeRedirect from './common/HomeRedirect';
 import menu from './common/menu';
+import { ADMIN, USER } from './common/roles';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 // Login, registration and password reset are shared with the old UI for now.
@@ -25,6 +26,7 @@ const DashboardPage = lazy(() => import('./pages/dashboard/DashboardPage'));
 const ReportsPage = lazy(() => import('./pages/reports/ReportsPage'));
 const UsersPage = lazy(() => import('./pages/users/UsersPage'));
 const IoMappingPage = lazy(() => import('./pages/io/IoMappingPage'));
+const HistoryPage = lazy(() => import('./pages/history/HistoryPage'));
 
 const pages = {
   companies: <CompaniesPage />,
@@ -91,6 +93,9 @@ const Navigation = () => {
               />
             </Route>
           ))}
+          <Route element={<RoleRoute roles={[USER, ADMIN]} />}>
+            <Route path="history" element={<HistoryPage />} />
+          </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

@@ -24,6 +24,7 @@ const EquipmentPage = lazy(() => import('./pages/equipment/EquipmentPage'));
 const DashboardPage = lazy(() => import('./pages/dashboard/DashboardPage'));
 const ReportsPage = lazy(() => import('./pages/reports/ReportsPage'));
 const UsersPage = lazy(() => import('./pages/users/UsersPage'));
+const IoMappingPage = lazy(() => import('./pages/io/IoMappingPage'));
 
 const pages = {
   companies: <CompaniesPage />,
@@ -35,6 +36,7 @@ const pages = {
   dashboard: <DashboardPage />,
   reports: <ReportsPage />,
   users: <UsersPage />,
+  'io-mapping': <IoMappingPage />,
 };
 
 const Navigation = () => {

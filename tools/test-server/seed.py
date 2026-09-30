@@ -233,6 +233,9 @@ def seed(api, settings, companies):
         command['attributes'].get('demoKey'): command
         for command in api.get('/api/commands?all=true')
     }
+    mappings_by_attribute = {
+        mapping['attribute']: mapping for mapping in api.get('/api/attributes/computed?all=true')
+    }
 
     ensure_user(api, users_by_email, {
         'name': 'Demo SuperAdmin',
@@ -313,6 +316,23 @@ def seed(api, settings, companies):
             for user, user_created in members:
                 if created or user_created:
                     api.link(userId=user['id'], commandId=command['id'])
+
+        # A demo IO mapping (see the IO mapping page): input 2 is the door switch at ACME.
+        if company['slug'] == 'acme':
+            mapping = mappings_by_attribute.get('door')
+            mapping_created = mapping is None
+            if mapping_created:
+                mapping = api.post('/api/attributes/computed', {
+                    'description': 'Durys',
+                    'attribute': 'door',
+                    'expression': 'in2',
+                    'type': 'boolean',
+                })
+                api.link(userId=admin['id'], attributeId=mapping['id'])
+                log(f'created IO mapping Durys for {company["name"]}')
+            for device in company_devices:
+                if mapping_created or device['id'] in new_devices:
+                    api.link(deviceId=device['id'], attributeId=mapping['id'])
 
         # Traccar only offers a saved command for devices it is linked to as well.
         for device in company_devices:

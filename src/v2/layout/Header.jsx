@@ -31,6 +31,9 @@ const themeTitleKeys = {
   system: 'themeSystem',
 };
 
+// Pages that are opened from other pages rather than from the menu.
+const extraTitleKeys = { history: 'historyAction' };
+
 const Header = ({ showMenuButton, onMenuClick }) => {
   const { classes } = useStyles();
   const t = useT();
@@ -38,6 +41,7 @@ const Header = ({ showMenuButton, onMenuClick }) => {
   const { mode, setMode } = useThemeMode();
 
   const current = menu.flat().find((item) => location.pathname.startsWith(`/${item.path}`));
+  const extraTitleKey = extraTitleKeys[location.pathname.split('/')[1]];
   const ThemeIcon = themeIcons[mode] || SettingsBrightnessIcon;
   const nextMode = themeModes[(themeModes.indexOf(mode) + 1) % themeModes.length];
 
@@ -50,7 +54,7 @@ const Header = ({ showMenuButton, onMenuClick }) => {
           </IconButton>
         )}
         <Typography variant="h6" noWrap className={classes.title}>
-          {current && t(current.titleKey)}
+          {current ? t(current.titleKey) : extraTitleKey && t(extraTitleKey)}
         </Typography>
         <Tooltip title={t(themeTitleKeys[mode])}>
           <IconButton color="inherit" onClick={() => setMode(nextMode)}>

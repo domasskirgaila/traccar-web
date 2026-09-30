@@ -108,7 +108,7 @@ const reportTypes = [
     query: { type: 'allEvents' },
     columns: [
       device,
-      { key: 'eventTime', titleKey: 'reportStartTime', format: (i) => formatDateTime(i.eventTime) },
+      { key: 'eventTime', titleKey: 'eventsTime', format: (i) => formatDateTime(i.eventTime) },
       {
         key: 'type',
         titleKey: 'sharedType',

@@ -19,12 +19,14 @@ const CompaniesPage = lazy(() => import('./pages/CompaniesPage'));
 const InstallerPage = lazy(() => import('./pages/InstallerPage'));
 const MapPage = lazy(() => import('./pages/map/MapPage'));
 const VehiclesPage = lazy(() => import('./pages/VehiclesPage'));
+const CommandsPage = lazy(() => import('./pages/commands/CommandsPage'));
 
 const pages = {
   companies: <CompaniesPage />,
   installer: <InstallerPage />,
   map: <MapPage />,
   vehicles: <VehiclesPage />,
+  commands: <CommandsPage />,
 };
 
 const Navigation = () => {

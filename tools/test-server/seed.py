@@ -57,10 +57,12 @@ VEHICLES = [
 
 TRACKERS = ['Teltonika FMB920', 'Teltonika FMC130', 'Teltonika FMB140', 'Teltonika FMC650']
 
+# Teltonika style custom commands; Traccar only offers commands the device protocol supports,
+# and both Teltonika and the OsmAnd demo devices accept custom ones.
 COMMANDS = [
-    ('Variklio blokavimas', 'engineStop'),
-    ('Variklio atblokavimas', 'engineResume'),
-    ('Pozicijos užklausa', 'positionSingle'),
+    ('engineStop', 'Variklio blokavimas', 'setdigout 1'),
+    ('engineResume', 'Variklio atblokavimas', 'setdigout 0'),
+    ('positionSingle', 'Pozicijos užklausa', 'getgps'),
 ]
 
 
@@ -243,6 +245,8 @@ def seed(api, settings, companies):
                 api.link(userId=admin['id'], managedUserId=user['id'])
             members.append((user, created))
 
+        company_devices = []
+        new_devices = set()
         for spec in company['devices']:
             device = devices_by_id.get(spec['uniqueId'])
             created = device is None
@@ -254,26 +258,43 @@ def seed(api, settings, companies):
                 # The seeding administrator is linked automatically; the company owns it.
                 api.unlink(userId=me['id'], deviceId=device['id'])
                 log(f'created device {device["name"]} for {company["name"]}')
+                new_devices.add(device['id'])
+            company_devices.append(device)
             for user, user_created in members:
                 if created or user_created:
                     api.link(userId=user['id'], deviceId=device['id'])
 
-        for description, command_type in COMMANDS:
-            key = f'{company["slug"]}-{command_type}'
+        company_commands = []
+        new_commands = set()
+        for suffix, description, data in COMMANDS:
+            key = f'{company["slug"]}-{suffix}'
+            fields = {
+                'description': description,
+                'type': 'custom',
+                # Traccar 6 cannot cancel queued commands, so the demo ones never queue.
+                'attributes': {'demoKey': key, 'data': data, 'noQueue': True},
+            }
             command = commands_by_key.get(key)
             created = command is None
             if created:
-                command = api.post('/api/commands', {
-                    'description': description,
-                    'type': command_type,
-                    'attributes': {'demoKey': key},
-                })
+                command = api.post('/api/commands', fields)
                 commands_by_key[key] = command
                 api.unlink(userId=me['id'], commandId=command['id'])
                 log(f'created command {description} for {company["name"]}')
+                new_commands.add(command['id'])
+            elif command['type'] != 'custom' or command['attributes'] != fields['attributes']:
+                api.request('PUT', f'/api/commands/{command["id"]}', body={**command, **fields})
+                log(f'updated command {description} for {company["name"]}')
+            company_commands.append(command)
             for user, user_created in members:
                 if created or user_created:
                     api.link(userId=user['id'], commandId=command['id'])
+
+        # Traccar only offers a saved command for devices it is linked to as well.
+        for device in company_devices:
+            for command in company_commands:
+                if device['id'] in new_devices or command['id'] in new_commands:
+                    api.link(deviceId=device['id'], commandId=command['id'])
 
 
 # ---------------------------------------------------------------- positions

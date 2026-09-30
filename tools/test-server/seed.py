@@ -17,6 +17,9 @@ Settings are read from seed.env next to this script (KEY=value lines):
     CONTAINER                    default traccar-new-ui-test (used to find the OsmAnd port)
     OSMAND_URL                   default http://<container ip>:5055
 
+Besides the company fleets it simulates spare trackers with IMEI 359000000000001-005 that
+belong to no company, so the Installer flow can be tried without real hardware.
+
 Uses only the Python standard library.
 """
 
@@ -130,6 +133,22 @@ def build_companies():
             'devices': devices,
         })
     return companies
+
+
+def build_spares():
+    """Simulated trackers that exist on no company yet, for trying the Installer flow:
+    register one of these IMEIs and data starts arriving immediately."""
+    rng = random.Random('spares')
+    return [{
+        'uniqueId': f'35900000000000{n}',
+        'behaviour': 'driving',
+        'center': (54.6872 + rng.uniform(-0.03, 0.03), 25.2797 + rng.uniform(-0.05, 0.05)),
+        'radius': rng.uniform(2, 5),
+        'period': rng.uniform(30, 50) * 60,
+        'phase': rng.random(),
+        'power': 12,
+        'tank': rng.uniform(0.3, 1.0),
+    } for n in range(1, 6)]
 
 
 # ---------------------------------------------------------------- Traccar API
@@ -354,20 +373,21 @@ def simulate(spec, now):
         'odometer': f'{loops * 2 * math.pi * spec["radius"] * 1000:.0f}',
         'in1': 'true' if driving else 'false',
         'in2': 'true' if wobble > 0.8 else 'false',
+        'in3': 'true' if int(now / 30) % 2 else 'false',
         'out1': 'false',
         'temp1': f'{4 + 2 * wobble:.1f}',
     }
 
 
-def send_positions(url, companies, now):
+def send_positions(url, specs, now):
     failures = 0
-    for company in companies:
-        for spec in company['devices']:
-            if spec['behaviour'] == 'offline':
-                continue
+    for spec in specs:
+        if spec['behaviour'] != 'offline':
             query = urllib.parse.urlencode(simulate(spec, now))
             try:
                 urllib.request.urlopen(f'{url}/?{query}', data=b'', timeout=5).read()
+            except urllib.error.HTTPError:
+                pass  # spare trackers are rejected until someone registers them
             except (urllib.error.URLError, OSError):
                 failures += 1
     if failures:
@@ -404,10 +424,11 @@ def main():
         return
     if '--seed-only' in sys.argv:
         return
+    specs = [spec for company in companies for spec in company['devices']] + build_spares()
     # Four rounds 15 s apart, so the next cron run takes over.
     for round_index in range(4):
         started = time.time()
-        send_positions(url, companies, started)
+        send_positions(url, specs, started)
         if round_index < 3:
             time.sleep(max(0.0, 15 - (time.time() - started)))
 

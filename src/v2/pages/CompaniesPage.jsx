@@ -20,7 +20,8 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import AddIcon from '@mui/icons-material/Add';
 import { useAsyncTask, useCatch } from '../../reactHelper';
 import fetchOrThrow from '../../common/util/fetchOrThrow';
-import { SUPERADMIN, isCompany, useRole } from '../common/roles';
+import { SUPERADMIN, useRole } from '../common/roles';
+import useCompanies from '../common/useCompanies';
 import { openCompanyFleet } from '../common/impersonation';
 import { setInstallerCompany } from '../common/installerCompany';
 import useT from '../common/useT';
@@ -81,19 +82,11 @@ const CompaniesPage = () => {
   const navigate = useNavigate();
   const role = useRole();
 
-  const [companies, setCompanies] = useState(null);
+  // Only company names are loaded here; no fleet data until a company is chosen.
+  const companies = useCompanies();
   const [keyword, setKeyword] = useState('');
   const [selected, setSelected] = useState(null);
   const [summary, setSummary] = useState(null);
-
-  // Only company names are loaded here; no fleet data until a company is chosen.
-  useAsyncTask(async ({ signal }) => {
-    const response = await fetchOrThrow('/api/users', { signal });
-    const users = await response.json();
-    setCompanies(
-      users.filter(isCompany).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
-    );
-  }, []);
 
   useAsyncTask(
     async ({ signal }) => {

@@ -16,7 +16,7 @@ const RegisterPage = lazy(() => import('../login/RegisterPage'));
 const ResetPasswordPage = lazy(() => import('../login/ResetPasswordPage'));
 const ChangeServerPage = lazy(() => import('../login/ChangeServerPage'));
 const CompaniesPage = lazy(() => import('./pages/CompaniesPage'));
-const InstallerPage = lazy(() => import('./pages/InstallerPage'));
+const InstallerPage = lazy(() => import('./pages/installer/InstallerPage'));
 const MapPage = lazy(() => import('./pages/map/MapPage'));
 const VehiclesPage = lazy(() => import('./pages/VehiclesPage'));
 const CommandsPage = lazy(() => import('./pages/commands/CommandsPage'));

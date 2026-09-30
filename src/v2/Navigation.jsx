@@ -17,10 +17,14 @@ const ResetPasswordPage = lazy(() => import('../login/ResetPasswordPage'));
 const ChangeServerPage = lazy(() => import('../login/ChangeServerPage'));
 const CompaniesPage = lazy(() => import('./pages/CompaniesPage'));
 const InstallerPage = lazy(() => import('./pages/InstallerPage'));
+const MapPage = lazy(() => import('./pages/map/MapPage'));
+const VehiclesPage = lazy(() => import('./pages/VehiclesPage'));
 
 const pages = {
   companies: <CompaniesPage />,
   installer: <InstallerPage />,
+  map: <MapPage />,
+  vehicles: <VehiclesPage />,
 };
 
 const Navigation = () => {

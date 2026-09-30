@@ -58,6 +58,9 @@ VEHICLES = [
     ('Toyota Hilux', 'pickup'), ('Škoda Octavia', 'car'),
 ]
 
+# Each driving demo vehicle raises one of these roughly every 70 minutes.
+ALARMS = ['overspeed', 'powerCut', 'tampering']
+
 TRACKERS = ['Teltonika FMB920', 'Teltonika FMC130', 'Teltonika FMB140', 'Teltonika FMC650']
 
 # Teltonika style custom commands; Traccar only offers commands the device protocol supports,
@@ -233,6 +236,8 @@ def seed(api, settings, companies):
         command['attributes'].get('demoKey'): command
         for command in api.get('/api/commands?all=true')
     }
+    notifications = api.get('/api/notifications?all=true')
+    notified_companies = {n['attributes'].get('demoKey') for n in notifications}
     mappings_by_attribute = {
         mapping['attribute']: mapping for mapping in api.get('/api/attributes/computed?all=true')
     }
@@ -316,6 +321,20 @@ def seed(api, settings, companies):
             for user, user_created in members:
                 if created or user_created:
                     api.link(userId=user['id'], commandId=command['id'])
+
+        # Web notifications so alarms reach the dashboard and the events page live.
+        notification_key = f'{company["slug"]}-alarms'
+        if notification_key not in notified_companies:
+            notification = api.post('/api/notifications', {
+                'type': 'alarm',
+                'always': True,
+                'notificators': 'web',
+                'attributes': {'demoKey': notification_key, 'alarms': ','.join(ALARMS)},
+            })
+            api.unlink(userId=me['id'], notificationId=notification['id'])
+            for user, _ in members:
+                api.link(userId=user['id'], notificationId=notification['id'])
+            log(f'created alarm notification for {company["name"]}')
 
         # A demo IO mapping (see the IO mapping page): input 2 is the door switch at ACME.
         if company['slug'] == 'acme':
@@ -401,7 +420,16 @@ def simulate(spec, now):
         'in3': 'true' if int(now / 30) % 2 else 'false',
         'out1': 'false',
         'temp1': f'{4 + 2 * wobble:.1f}',
+        **alarm(spec, now, driving),
     }
+
+
+def alarm(spec, now, driving):
+    """One alarm in a 15 s window every 70 minutes, shifted per vehicle."""
+    slot = int(now // 15 + spec['phase'] * 280)
+    if driving and slot % 280 == 0:
+        return {'alarm': ALARMS[(slot // 280) % len(ALARMS)]}
+    return {}
 
 
 def send_positions(url, specs, now):

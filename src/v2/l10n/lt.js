@@ -3,6 +3,18 @@ export default {
   menuMap: 'Žemėlapis',
   menuVehicles: 'Transportas',
   menuCommands: 'Komandos',
+  menuEvents: 'Įvykiai',
+  eventsLive: 'Gyvai',
+  eventsHistory: 'Istorija',
+  eventsLiveHint:
+    'Įvykiai, gauti kol programa atidaryta. Kurie įvykiai čia rodomi, priklauso nuo jūsų paskyrai nustatytų pranešimų.',
+  eventsClear: 'Išvalyti',
+  eventsShow: 'Rodyti',
+  eventsTime: 'Laikas',
+  eventsEvent: 'Įvykis',
+  eventsNone: 'Įvykių nėra.',
+  eventsHistoryHint:
+    'Pasirinkite transporto priemones, įvykio tipą ir laikotarpį, tada spauskite „Rodyti“.',
   menuReports: 'Ataskaitos',
   menuEquipment: 'Įrangos valdymas',
   menuCompanies: 'Įmonės',

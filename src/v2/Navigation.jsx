@@ -20,6 +20,7 @@ const InstallerPage = lazy(() => import('./pages/installer/InstallerPage'));
 const MapPage = lazy(() => import('./pages/map/MapPage'));
 const VehiclesPage = lazy(() => import('./pages/VehiclesPage'));
 const CommandsPage = lazy(() => import('./pages/commands/CommandsPage'));
+const EquipmentPage = lazy(() => import('./pages/equipment/EquipmentPage'));
 
 const pages = {
   companies: <CompaniesPage />,
@@ -27,6 +28,7 @@ const pages = {
   map: <MapPage />,
   vehicles: <VehiclesPage />,
   commands: <CommandsPage />,
+  equipment: <EquipmentPage />,
 };
 
 const Navigation = () => {

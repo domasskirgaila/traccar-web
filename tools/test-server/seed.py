@@ -251,7 +251,12 @@ def seed(api, settings, companies):
         admin, admin_created = ensure_user(api, users_by_email, {
             **company['admin'],
             'userLimit': 20,
+            'deviceLimit': -1,
         }, password)
+        # Traccar stores deviceLimit 0 (no new devices) unless it is set; fixes older demo data.
+        if admin['deviceLimit'] != -1:
+            admin = api.request('PUT', f'/api/users/{admin["id"]}', body={**admin, 'deviceLimit': -1})
+            log(f'allowed {admin["email"]} to add devices')
 
         members = [(admin, admin_created)]
         for fields in company['users']:

@@ -38,7 +38,7 @@ const trackerModels = [
 
 const emptyDevice = { uniqueId: '', name: '', model: '', category: 'truck', phone: '' };
 
-const InstallationForm = ({ company, onCreated }) => {
+const InstallationForm = ({ company, onCreated, title }) => {
   const { classes } = useStyles();
   const t = useT();
   const sharedT = useTranslation();
@@ -82,7 +82,7 @@ const InstallationForm = ({ company, onCreated }) => {
     <Card variant="outlined">
       <CardContent>
         <Typography variant="subtitle1" fontWeight={600}>
-          {t('installerNew')}
+          {title || t('installerNew')}
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit}>
           <TextField

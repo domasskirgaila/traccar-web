@@ -1,0 +1,70 @@
+name: Deploy
+
+# Builds the new UI and deploys it, with the chat service, to the homelab Traccar
+# (domasskirgaila/homelab-traccar serves ./web and runs the traccar-chat container).
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build new UI
+        run: npm run build
+        env:
+          VITE_NEW_UI: '1'
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_CLIENT_SECRET }}
+          tags: tag:ci
+
+      - name: Upload web UI and chat service
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 100.84.231.107
+          username: domdom
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: build,tools/chat-service
+          target: /home/domdom/traccar-web-deploy
+          rm: true
+
+      - name: Deploy to homelab
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 100.84.231.107
+          username: domdom
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            src=/home/domdom/traccar-web-deploy
+            cd /opt/traccar
+            mkdir -p web
+            # Replace the files in place: the Traccar container bind-mounts this directory.
+            find web -mindepth 1 -delete
+            cp -a "$src/build/." web/
+            docker build -q -t traccar-chat:latest "$src/tools/chat-service"
+            # Until homelab-traccar defines the service there is nothing to restart.
+            if docker compose config --services | grep -qx traccar-chat; then
+              docker compose up -d traccar-chat
+            fi

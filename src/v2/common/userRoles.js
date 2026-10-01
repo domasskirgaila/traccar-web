@@ -54,28 +54,36 @@ export const roleFields = (user, role) => {
 };
 
 // Gives a user access to everything of a company: managed by its Admin, linked to its
-// devices and saved commands.
+// devices, saved commands and notifications.
 const joinCompany = async (userId, companyId) => {
-  const [devices, commands] = await Promise.all([
+  const [devices, commands, notifications] = await Promise.all([
     getJson(`/api/devices?userId=${companyId}`),
     getJson(`/api/commands?userId=${companyId}`),
+    getJson(`/api/notifications?userId=${companyId}`),
   ]);
   await Promise.all([
     permission('POST', { userId: companyId, managedUserId: userId }),
     ...devices.map((device) => permission('POST', { userId, deviceId: device.id })),
     ...commands.map((command) => permission('POST', { userId, commandId: command.id })),
+    ...notifications.map((notification) =>
+      permission('POST', { userId, notificationId: notification.id }),
+    ),
   ]);
 };
 
 const leaveCompany = async (userId, companyId) => {
-  const [devices, commands] = await Promise.all([
+  const [devices, commands, notifications] = await Promise.all([
     getJson(`/api/devices?userId=${userId}`),
     getJson(`/api/commands?userId=${userId}`),
+    getJson(`/api/notifications?userId=${userId}`),
   ]);
   await Promise.all([
     permission('DELETE', { userId: companyId, managedUserId: userId }),
     ...devices.map((device) => permission('DELETE', { userId, deviceId: device.id })),
     ...commands.map((command) => permission('DELETE', { userId, commandId: command.id })),
+    ...notifications.map((notification) =>
+      permission('DELETE', { userId, notificationId: notification.id }),
+    ),
   ]);
 };
 

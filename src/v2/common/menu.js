@@ -12,6 +12,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import DnsIcon from '@mui/icons-material/Dns';
+import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 import { ADMIN, INSTALLER, SUPERADMIN, USER, allRoles } from './roles';
 
 // Single source for both the sidebar and the route guards, so they cannot disagree.
@@ -26,6 +27,12 @@ export default [
     { path: 'events', titleKey: 'menuEvents', icon: NotificationsIcon, roles: [USER, ADMIN] },
     { path: 'reports', titleKey: 'menuReports', icon: AssessmentIcon, roles: [ADMIN] },
     { path: 'equipment', titleKey: 'menuEquipment', icon: RouterIcon, roles: [ADMIN] },
+    {
+      path: 'notifications',
+      titleKey: 'menuNotifications',
+      icon: NotificationAddIcon,
+      roles: [ADMIN],
+    },
   ],
   [
     {

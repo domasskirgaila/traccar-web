@@ -20,7 +20,6 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import HistoryIcon from '@mui/icons-material/History';
-import TerminalIcon from '@mui/icons-material/Terminal';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MapView from '../../../map/core/MapView';
@@ -107,7 +106,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 // Driver workspace: pick the one company vehicle being driven, then see it on the map, its
-// history and commands, and talk to the dispatchers.
+// history, and talk to the dispatchers.
 const DriverPage = () => {
   const { classes } = useStyles();
   const t = useT();
@@ -295,13 +294,6 @@ const DriverPage = () => {
               onClick={() => navigate(`/history?deviceId=${device.id}`)}
             >
               {t('historyAction')}
-            </Button>
-            <Button
-              size="small"
-              startIcon={<TerminalIcon />}
-              onClick={() => navigate(`/commands?deviceId=${device.id}`)}
-            >
-              {t('commandsAction')}
             </Button>
             <Button size="small" startIcon={<SwapHorizIcon />} onClick={() => setChoosing(true)}>
               {t('driverChange')}

@@ -32,7 +32,7 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 - **Installer:** įmonės pasirinkimas, įrenginio registravimas pagal IMEI, automatinis susiejimas su įmone, gyvas IO testas ir testinės komandos.
 - **Admin:** konfigūruojamas skydelis (valdikliai, tempimas, IO reikšmės, rida per dieną), įrangos valdymas, geozonų piešimas, techninė priežiūra, pranešimai, komandų kūrimas, ataskaitos su išsaugotais ataskaitų būdais ir Excel eksportu.
 - **User ir Admin:** žemėlapis su transporto sąrašu ir paneliu, transporto lentelė, maršrutų istorija su atkūrimu, komandos, įvykių centras, nustatymai.
-- **Driver ir žinutės:** vairuotojas pasirenka vieną įmonės mašiną (užimtą galima perimti tik patvirtinus), mato ją žemėlapyje, jos istoriją ir komandas, susirašinėja su dispečeriais. Dispečeriai (User, Admin) turi puslapį „Žinutės“ su neperskaitytų skaičiumi meniu, o mašinos panelyje mato vairuotoją. Žinutės saugomos atskirame servise `tools/chat-service` (Python + SQLite), kuris tikrina teises per Traccar sesiją.
+- **Driver ir žinutės:** vairuotojas pasirenka vieną įmonės mašiną (užimtą galima perimti tik patvirtinus), mato ją žemėlapyje ir jos istoriją, susirašinėja su dispečeriais (komandų vairuotojas nemato). Dispečeriai (User, Admin) turi puslapį „Žinutės“ su neperskaitytų skaičiumi meniu, o mašinos panelyje mato vairuotoją. Žinutės saugomos atskirame servise `tools/chat-service` (Python + SQLite), kuris tikrina teises per Traccar sesiją.
 - **Greitis:** pagrindinis JS failas sumažintas nuo 1,5 MB iki 0,4 MB (žemėlapio variklis kraunamas atskirai).
 - **Testinis serveris:** `tools/test-server/seed.py` per cron kas minutę palaiko 5 įmones, 40 mašinų, komandas, aliarmus, geozonas „Bazė“, pranešimus ir IO susiejimą „Durys“.
 
@@ -48,7 +48,7 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 - [ ] **SuperAdmin:** Komandų šablonai → sukurti, priskirti įmonei, patikrinti, kad įmonės vartotojas jį mato. Audito žurnalas, Sistema.
 - [ ] **Admin:** Skydelis → „Tvarkyti skydelį“ (pridėti IO valdiklį, pertempti, pakeisti dydį, išsaugoti), Įrangos valdymas (pridėti / redaguoti / pašalinti / gyvas testas), Geozonos (nubrėžti, pavadinti, pakeisti formą), Techninė priežiūra, Pranešimai, Komandos → „Išsaugotos komandos“, Ataskaitos (sugeneruoti, išsaugoti būdą, eksportuoti į Excel).
 - [ ] **Prisijungimo langas:** prisijungti, neteisingas slaptažodis, kalbos keitimas.
-- [ ] **Driver:** `driver1@acme.test` → pasirinkti mašiną → žemėlapis, žinutės, Istorija, Komandos. Antroje naršyklėje `driver2@acme.test` → bandyti pasirinkti tą pačią mašiną (turi pasiūlyti perimti).
+- [ ] **Driver:** `driver1@acme.test` → pasirinkti mašiną → žemėlapis, žinutės, Istorija (Komandų neturi būti). Antroje naršyklėje `driver2@acme.test` → bandyti pasirinkti tą pačią mašiną (turi pasiūlyti perimti).
 - [ ] **Dispečeris:** `user1@acme.test` → Žinutės → parašyti vairuotojui; meniu „Žinutės“ turi rodyti neperskaitytų skaičių, kai vairuotojas atsako.
 - [ ] **User:** Žemėlapis (sąrašas, filtrai, panelis, „Visi IO“, Istorija), Komandos, Įvykiai, Nustatymai.
 - [ ] Telefone: žemėlapis, sąrašo mygtukas, panelis, šoninis meniu.

@@ -4,8 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Autocomplete, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import StatusDot from '../../common/StatusDot';
-import { ADMIN, DRIVER, useRole } from '../../common/roles';
-import { useVisibleDevices } from '../../common/chat';
+import { ADMIN, useRole } from '../../common/roles';
 import useT from '../../common/useT';
 import SendCommands from './SendCommands';
 import SavedCommands from './SavedCommands';
@@ -36,8 +35,7 @@ const CommandsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState('send');
 
-  const allItems = useSelector((state) => state.devices.items);
-  const items = useVisibleDevices(allItems, role === DRIVER);
+  const items = useSelector((state) => state.devices.items);
   const devices = useMemo(
     () => Object.values(items).sort((a, b) => a.name.localeCompare(b.name)),
     [items],

@@ -30,12 +30,7 @@ export default [
     { path: 'map', titleKey: 'menuMap', icon: MapIcon, roles: [USER, ADMIN] },
     { path: 'vehicles', titleKey: 'menuVehicles', icon: LocalShippingIcon, roles: [USER, ADMIN] },
     { path: 'messages', titleKey: 'menuMessages', icon: ChatIcon, roles: [USER, ADMIN] },
-    {
-      path: 'commands',
-      titleKey: 'menuCommands',
-      icon: TerminalIcon,
-      roles: [USER, ADMIN, DRIVER],
-    },
+    { path: 'commands', titleKey: 'menuCommands', icon: TerminalIcon, roles: [USER, ADMIN] },
     { path: 'events', titleKey: 'menuEvents', icon: NotificationsIcon, roles: [USER, ADMIN] },
     { path: 'reports', titleKey: 'menuReports', icon: AssessmentIcon, roles: [ADMIN] },
     { path: 'equipment', titleKey: 'menuEquipment', icon: RouterIcon, roles: [ADMIN] },

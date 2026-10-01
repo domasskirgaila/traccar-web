@@ -14,6 +14,7 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import DnsIcon from '@mui/icons-material/Dns';
 import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 import CarRepairIcon from '@mui/icons-material/CarRepair';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import { ADMIN, INSTALLER, SUPERADMIN, USER, allRoles } from './roles';
 
 // Single source for both the sidebar and the route guards, so they cannot disagree.
@@ -62,6 +63,7 @@ export default [
       icon: SettingsInputComponentIcon,
       roles: [SUPERADMIN],
     },
+    { path: 'audit', titleKey: 'menuAudit', icon: HistoryEduIcon, roles: [SUPERADMIN] },
     { path: 'system', titleKey: 'menuSystem', icon: DnsIcon, roles: [SUPERADMIN] },
   ],
   [{ path: 'settings', titleKey: 'menuSettings', icon: SettingsIcon, roles: allRoles }],

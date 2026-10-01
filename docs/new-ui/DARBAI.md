@@ -65,10 +65,10 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 
 ### Serveris ir diegimas
 
-- [ ] **Automatinis diegimas į pagrindinį serverį (8082).** `traccar-web` push į `master` → `.github/workflows/deploy.yml` sukompiliuoja naują UI ir per Tailscale įkelia jį į `/opt/traccar/web`, perkuria `traccar-chat`. `homelab-traccar` pakeitimai: Caddy proxy ant 8082 (`/chat-api` → žinučių servisas, visa kita → Traccar), `./web` prijungtas prie Traccar konteinerio, `traccar-chat` servisas. Reikia `traccar-web` saugykloje pridėti slaptažodžius `TAILSCALE_CLIENT_ID`, `TAILSCALE_CLIENT_SECRET`, `SSH_PRIVATE_KEY` (tos pačios reikšmės kaip `homelab-traccar`).
+- [x] **Automatinis diegimas į pagrindinį serverį (8082).** `traccar-web` push į `master` → `.github/workflows/deploy.yml` sukompiliuoja naują UI ir per Tailscale įkelia jį į `/opt/traccar/web`, perkuria `traccar-chat`. `homelab-traccar`: Caddy proxy ant 8082 (`/chat-api` → žinučių servisas, visa kita → Traccar), `./web` prijungtas prie Traccar konteinerio, `traccar-chat` servisas. Slaptažodžiai `TAILSCALE_CLIENT_ID`, `TAILSCALE_CLIENT_SECRET`, `SSH_PRIVATE_KEY` (diegimo raktas `traccar-web deploy` serverio `authorized_keys`). Atšaukti: `homelab-traccar` atšaukti commit'ą „Serve the new traccar-web UI and chat service“.
 
-- [ ] **Žinučių servisas testiniame serveryje paleistas be automatinio paleidimo.** Kad pasileistų po serverio perkrovimo, įvykdykite: `docker update --restart unless-stopped traccar-chat`. Servisas ir testinis Traccar sujungti Docker tinklu `traccar-test` (ugniasienė `ufw` neleidžia konteineriui pasiekti serverio prievadų).
-- [ ] **Žinučių servisas produkcijoje:** jį reikia paleisti šalia Traccar ir per tą patį adresą kaip Traccar nukreipti kelią `/chat-api` į jį (nginx / Caddy reverse proxy). Kitaip naršyklė neperduos Traccar sesijos ir žinutės neveiks. Duomenys saugomi tome `/data` (SQLite), jį reikia įtraukti į atsargines kopijas.
+- [ ] **Testinis žinučių servisas** (konteineris `traccar-chat-test`, 18090) paleistas be automatinio paleidimo. Kad pasileistų po perkrovimo: `docker update --restart unless-stopped traccar-chat-test`. Pagrindinio serverio `traccar-chat` valdo `homelab-traccar` compose. Servisas ir testinis Traccar sujungti Docker tinklu `traccar-test` (ugniasienė `ufw` neleidžia konteineriui pasiekti serverio prievadų).
+- [ ] **Žinučių serviso duomenys** pagrindiniame serveryje yra Docker tome `traccar_chat_data` (SQLite) — įtraukti į atsargines kopijas (`backup.sh` dabar kopijuoja tik PostgreSQL).
 
 - [ ] **HTTPS naujam UI.** Gyvas IMEI skenavimas kamera naršyklėje veikia tik per HTTPS. Per HTTP veikia tik nuotraukos būdas. Testiniam serveriui reikia HTTPS (pvz. nginx / Caddy su sertifikatu prieš 18082).
 

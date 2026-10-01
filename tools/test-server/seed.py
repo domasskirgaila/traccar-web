@@ -46,6 +46,12 @@ COMPANIES = [
     ('aukstaitija', 'Aukštaitijos Pervežimai', 55.7348, 24.3575),
 ]
 
+DRIVERS = [
+    'Vytautas Petrauskas', 'Andrius Kairys', 'Marius Žilinskas', 'Saulius Bagdonas',
+    'Rimantas Grigas', 'Kęstutis Morkūnas', 'Gintaras Šimkus', 'Arūnas Lukoševičius',
+    'Valdas Jonaitis', 'Edvinas Rimkus',
+]
+
 PEOPLE = [
     'Jonas Petraitis', 'Rūta Kazlauskienė', 'Tomas Jankauskas', 'Eglė Stankevičiūtė',
     'Mantas Vasiliauskas', 'Ieva Žukauskaitė', 'Darius Butkus', 'Greta Paulauskaitė',
@@ -105,6 +111,14 @@ def build_companies():
         users = [
             {'name': next(people), 'email': f'user{n}@{slug}.test'}
             for n in range(1, 2 + index % 3 + 1)
+        ] + [
+            # Drivers pick one company vehicle and chat with dispatchers in the new UI.
+            {
+                'name': DRIVERS[index * 2 + n - 1],
+                'email': f'driver{n}@{slug}.test',
+                'attributes': {'role': 'driver'},
+            }
+            for n in (1, 2)
         ]
         devices = []
         for n in range(4 + index * 2):
@@ -256,8 +270,12 @@ def seed(api, settings, companies):
         for command in api.get('/api/commands?all=true')
     }
     notifications = api.get('/api/notifications?all=true')
-    notified_companies = {n['attributes'].get('demoKey') for n in notifications}
-    geofence_keys = {g['attributes'].get('demoKey') for g in api.get('/api/geofences?all=true')}
+    notifications_by_key = {n['attributes'].get('demoKey'): n for n in notifications}
+    notified_companies = set(notifications_by_key)
+    geofences_by_key = {
+        g['attributes'].get('demoKey'): g for g in api.get('/api/geofences?all=true')
+    }
+    geofence_keys = set(geofences_by_key)
     mappings_by_attribute = {
         mapping['attribute']: mapping for mapping in api.get('/api/attributes/computed?all=true')
     }
@@ -389,6 +407,21 @@ def seed(api, settings, companies):
             log(f'created base geofence for {company["name"]}')
         # New devices of existing companies get the geofence through the UI; demo devices are
         # only created together with the company, so no extra linking is needed here.
+
+        # Users added after the company notifications and geofence existed (the demo drivers)
+        # get them too; ones created in this run were linked to every member already.
+        slug = company['slug']
+        existing = [
+            notifications_by_key.get(key)
+            for key in (f'{slug}-alarms', f'{slug}-geofence', f'{slug}-geofence-exit')
+        ]
+        base = geofences_by_key.get(f'{slug}-base')
+        for user, user_created in members:
+            if user_created:
+                for notification in filter(None, existing):
+                    api.link(userId=user['id'], notificationId=notification['id'])
+                if base:
+                    api.link(userId=user['id'], geofenceId=base['id'])
 
         # A demo IO mapping (see the IO mapping page): input 2 is the door switch at ACME.
         if company['slug'] == 'acme':

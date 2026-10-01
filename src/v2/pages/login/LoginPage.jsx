@@ -113,11 +113,18 @@ const LoginPage = () => {
     event.preventDefault();
     setFailed(false);
     setLoading(true);
+    // Read the fields themselves: browsers fill in saved credentials without telling the page
+    // until the user interacts, so React state can still be empty on the first Enter.
+    const fields = new FormData(event.currentTarget);
     try {
-      const form = { email, password };
+      const form = {
+        email: fields.get('email') || email,
+        password: fields.get('password') || password,
+      };
       if (codeEnabled) {
-        form.code = code;
+        form.code = fields.get('code') || code;
       }
+      setEmail(form.email);
       const response = await fetch('/api/session', {
         method: 'POST',
         body: new URLSearchParams(form),
@@ -231,12 +238,7 @@ const LoginPage = () => {
                 />
               )}
               {failed && <Alert severity="error">{t('loginFailed')}</Alert>}
-              <Button
-                type="submit"
-                variant="contained"
-                size="large"
-                disabled={loading || !email || !password || (codeEnabled && !code)}
-              >
+              <Button type="submit" variant="contained" size="large" disabled={loading}>
                 {sharedT('loginLogin')}
               </Button>
             </>

@@ -49,7 +49,8 @@ jobs:
             exit 1
           fi
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy
+          # Keys copied on Windows can carry CRLF line endings, which ssh rejects.
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy
           chmod 600 ~/.ssh/deploy
           if ! ssh-keygen -y -f ~/.ssh/deploy > /dev/null; then
             echo "::error::SSH_PRIVATE_KEY is not a valid private key without a passphrase"

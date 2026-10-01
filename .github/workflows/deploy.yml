@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -39,32 +39,53 @@ jobs:
           oauth-secret: ${{ secrets.TAILSCALE_CLIENT_SECRET }}
           tags: tag:ci
 
+      # Plain ssh, so every failure is reported as an annotation on the run.
+      - name: Prepare SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          if [ -z "$SSH_PRIVATE_KEY" ]; then
+            echo "::error::The SSH_PRIVATE_KEY secret is missing in this repository"
+            exit 1
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          if ! ssh-keygen -y -f ~/.ssh/deploy > /dev/null; then
+            echo "::error::SSH_PRIVATE_KEY is not a valid private key without a passphrase"
+            exit 1
+          fi
+          cat > ~/.ssh/config <<'EOF'
+          Host homelab
+            HostName 100.84.231.107
+            User domdom
+            IdentityFile ~/.ssh/deploy
+            StrictHostKeyChecking accept-new
+            ConnectTimeout 30
+          EOF
+          if ! ssh homelab true; then
+            echo "::error::SSH login to domdom@100.84.231.107 failed (key not authorized or host unreachable)"
+            exit 1
+          fi
+
       - name: Upload web UI and chat service
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: 100.84.231.107
-          username: domdom
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: build,tools/chat-service
-          target: /home/domdom/traccar-web-deploy
-          rm: true
+        run: |
+          ssh homelab 'rm -rf ~/traccar-web-deploy && mkdir -p ~/traccar-web-deploy'
+          tar -czf - build tools/chat-service | ssh homelab 'tar -xzf - -C ~/traccar-web-deploy'
 
       - name: Deploy to homelab
-        uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: 100.84.231.107
-          username: domdom
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -e
-            src=/home/domdom/traccar-web-deploy
-            cd /opt/traccar
-            mkdir -p web
-            # Replace the files in place: the Traccar container bind-mounts this directory.
-            find web -mindepth 1 -delete
-            cp -a "$src/build/." web/
-            docker build -q -t traccar-chat:latest "$src/tools/chat-service"
-            # Until homelab-traccar defines the service there is nothing to restart.
-            if docker compose config --services | grep -qx traccar-chat; then
-              docker compose up -d traccar-chat
-            fi
+        run: |
+          ssh homelab 'bash -s' <<'EOF' || { echo "::error::Deployment on the homelab failed"; exit 1; }
+          set -e
+          src=~/traccar-web-deploy
+          cd /opt/traccar
+          mkdir -p web
+          # Replace the files in place: the Traccar container bind-mounts this directory.
+          find web -mindepth 1 -delete
+          cp -a "$src/build/." web/
+          docker build -q -t traccar-chat:latest "$src/tools/chat-service"
+          # Until homelab-traccar defines the service there is nothing to restart.
+          if docker compose config --services | grep -qx traccar-chat; then
+            docker compose up -d traccar-chat
+          fi
+          EOF

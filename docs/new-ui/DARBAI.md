@@ -1,6 +1,6 @@
 # Naujas UI — darbų sąrašas
 
-Atnaujinta: 2026-09-30. Šaka: `sandbox/DS/new_ui` (13 commit'ų, į GitHub **nepush'inta**).
+Atnaujinta: 2026-10-01. Šaka: `sandbox/DS/new_ui` (25 commit'ai, į GitHub **nepush'inta**).
 
 ## 1. Kaip paleisti
 
@@ -26,11 +26,13 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 ## 2. Kas padaryta
 
 - **Pagrindas:** perjungimas `VITE_NEW_UI`, rolės (User / Admin / Installer / SuperAdmin), meniu ir maršrutų apsauga pagal rolę, šviesi/tamsi tema, lietuvių ir anglų kalbos.
-- **SuperAdmin:** įmonių pasirinkimas → „Atidaryti parką“ (prisijungimas įmonės Admin vardu, juosta „Keisti įmonę“), vartotojai ir rolės, IO mapping.
+- **Prisijungimas:** naujas prisijungimo langas (TOTP, OpenID, kalba, serverio pranešimas).
+- **SuperAdmin:** įmonių pasirinkimas → „Atidaryti parką“ (prisijungimas įmonės Admin vardu, juosta „Keisti įmonę“), vartotojai ir rolės, IO mapping, komandų šablonai įmonėms, audito žurnalas, sistema (statistika, pranešimas prisijungimo lange, registracija).
 - **Installer:** įmonės pasirinkimas, įrenginio registravimas pagal IMEI, automatinis susiejimas su įmone, gyvas IO testas ir testinės komandos.
-- **Admin:** skydelis, įrangos valdymas, komandų kūrimas, ataskaitos su išsaugotais ataskaitų būdais ir Excel eksportu.
+- **Admin:** konfigūruojamas skydelis (valdikliai, tempimas, IO reikšmės, rida per dieną), įrangos valdymas, geozonų piešimas, techninė priežiūra, pranešimai, komandų kūrimas, ataskaitos su išsaugotais ataskaitų būdais ir Excel eksportu.
 - **User ir Admin:** žemėlapis su transporto sąrašu ir paneliu, transporto lentelė, maršrutų istorija su atkūrimu, komandos, įvykių centras, nustatymai.
-- **Testinis serveris:** `tools/test-server/seed.py` per cron kas minutę palaiko 5 įmones, 40 mašinų, komandas, aliarmus, pranešimus ir IO susiejimą „Durys“.
+- **Greitis:** pagrindinis JS failas sumažintas nuo 1,5 MB iki 0,4 MB (žemėlapio variklis kraunamas atskirai).
+- **Testinis serveris:** `tools/test-server/seed.py` per cron kas minutę palaiko 5 įmones, 40 mašinų, komandas, aliarmus, geozonas „Bazė“, pranešimus ir IO susiejimą „Durys“.
 
 ## 3. Ką reikia padaryti jums
 
@@ -40,7 +42,9 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 - [ ] **SuperAdmin:** Vartotojai ir rolės → sukurti įmonę, vartotoją, pakeisti rolę, pašalinti.
 - [ ] **SuperAdmin:** IO mapping → atsidaryti „Durys“, išbandyti su ACME mašina, sukurti savo susiejimą, priskirti įmonei.
 - [ ] **Installer:** Instaliacija → įmonė → IMEI `359000000000001` → matyti gyvus IO (`in3` persijungia kas 30 s ir paryškinama).
-- [ ] **Admin:** Skydelis, Įrangos valdymas (pridėti / redaguoti / pašalinti / gyvas testas), Komandos → „Išsaugotos komandos“, Ataskaitos (sugeneruoti, išsaugoti būdą, eksportuoti į Excel).
+- [ ] **SuperAdmin:** Komandų šablonai → sukurti, priskirti įmonei, patikrinti, kad įmonės vartotojas jį mato. Audito žurnalas, Sistema.
+- [ ] **Admin:** Skydelis → „Tvarkyti skydelį“ (pridėti IO valdiklį, pertempti, pakeisti dydį, išsaugoti), Įrangos valdymas (pridėti / redaguoti / pašalinti / gyvas testas), Geozonos (nubrėžti, pavadinti, pakeisti formą), Techninė priežiūra, Pranešimai, Komandos → „Išsaugotos komandos“, Ataskaitos (sugeneruoti, išsaugoti būdą, eksportuoti į Excel).
+- [ ] **Prisijungimo langas:** prisijungti, neteisingas slaptažodis, kalbos keitimas.
 - [ ] **User:** Žemėlapis (sąrašas, filtrai, panelis, „Visi IO“, Istorija), Komandos, Įvykiai, Nustatymai.
 - [ ] Telefone: žemėlapis, sąrašo mygtukas, panelis, šoninis meniu.
 - [ ] Parašyti, kas negražu ar nepatogu — pataisysiu.
@@ -49,9 +53,10 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 
 - [ ] **Installer = pilnas administratorius backend'e.** Apribojimai galioja tik naujame UI; per API Installer gali viską. Ar tai priimtina, ar vėliau darome backend rolę?
 - [ ] **Komandų eilė.** Traccar 6 neturi API eilei peržiūrėti ar atšaukti, todėl naujas UI siunčia be eilės. **Senas UI vis dar deda komandas į eilę pagal nutylėjimą.** Ar keičiame ir tai (pvz. `noQueue` visoms esamoms išsaugotoms komandoms)?
-- [ ] **Prisijungimo langas.** Kol kas naudojamas seno UI. Ar reikia naujo dizaino?
-- [ ] **Skydelio valdiklių tempimas (drag & drop).** Reikės naujos bibliotekos (pvz. `react-grid-layout`) — ar sutinkate?
-- [ ] Ką imame toliau iš 5 skyriaus?
+- [ ] **Užduotys / dispečeris.** Traccar neturi užduočių duomenų modelio. Variantai: (a) nedidelis atskiras servisas ar backend plėtinys užduotims saugoti, (b) laikyti užduotis Admin paskyros atributuose (paprasta, bet netinka daug užduočių ir keliems redaguojantiems vienu metu). Kurį renkamės?
+- [ ] **Automatiniai testai.** Projekte nėra testų įrankio. Ar sutinkate pridėti `vitest` + `@testing-library/react` (tik dev priklausomybės)?
+- [ ] **Pranešimai komanda (kanalas `command`).** Ar reikia, kad įvykis automatiškai siųstų komandą įrenginiui?
+- [ ] Registracijos ir slaptažodžio atkūrimo langai kol kas seno UI — ar perdaryti?
 
 ### Serveris ir diegimas
 
@@ -69,13 +74,17 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 - Demo (OsmAnd) įrenginiai **negali priimti komandų**, todėl siuntimas jiems baigiasi klaida „Įrenginys neprisijungęs arba nepriima komandų“. Tai tikėtina; su tikru Teltonika turėtų veikti.
 - Gyvi įvykiai rodomi tik tiems tipams, kuriems vartotojas turi „web“ pranešimą (demo — aliarmai).
 - SuperAdmin raktas grįžimui laikomas naršyklės `sessionStorage` 12 val.; uždarius kortelę tenka prisijungti iš naujo.
-- Pagrindinis JS failas ~1,5 MB (toks pat kaip seno UI) — verta optimizuoti.
+- Skydelio tempimas veikia pele; telefone valdiklius perkelkite rodyklėmis (naršyklių drag & drop jutikliniuose ekranuose neveikia).
+- Pranešimai, priskirti konkrečioms mašinoms (ne „visoms“), automatiškai neprisiriša prie vėliau pridėtų mašinų — juos reikia papildyti rankiniu būdu.
+- Techninės priežiūros planai taip pat priskiriami konkrečioms mašinoms; naujai pridėtą mašiną reikia įtraukti į planą.
 
 ## 5. Likę darbai iš pradinio sąrašo
 
-- [ ] C: skydelio valdiklių sistema, drag & drop, savi grafikai, IO valdikliai
-- [ ] F: globali komandų konfigūracija (šablonai visoms įmonėms), sistemos įrankiai (serverio nustatymai, žurnalai, statistika)
-- [ ] G: užduotys / dispečeris, techninė priežiūra, pranešimų valdymas UI, audito žurnalas
-- [ ] Naujas prisijungimo langas
-- [ ] Geozonų kūrimas naujame UI (dabar tik rodomos žemėlapyje)
-- [ ] Automatiniai testai
+- [x] C: skydelio valdiklių sistema, drag & drop, savi grafikai, IO valdikliai
+- [x] F: globali komandų konfigūracija (šablonai), sistemos įrankiai (statistika, serverio nustatymai)
+- [x] G: techninė priežiūra, pranešimų valdymas, audito žurnalas
+- [x] Naujas prisijungimo langas
+- [x] Geozonų kūrimas
+- [x] Pagrindinio JS failo sumažinimas
+- [ ] G: užduotys / dispečeris — laukia jūsų sprendimo (3 skyrius)
+- [ ] Automatiniai testai — laukia jūsų sprendimo (3 skyrius)

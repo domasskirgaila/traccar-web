@@ -1,0 +1,76 @@
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import MapIcon from '@mui/icons-material/Map';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import TerminalIcon from '@mui/icons-material/Terminal';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import RouterIcon from '@mui/icons-material/Router';
+import BusinessIcon from '@mui/icons-material/Business';
+import BuildIcon from '@mui/icons-material/Build';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputComponent';
+import SettingsIcon from '@mui/icons-material/Settings';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import DnsIcon from '@mui/icons-material/Dns';
+import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
+import CarRepairIcon from '@mui/icons-material/CarRepair';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import FenceIcon from '@mui/icons-material/Fence';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import ChatIcon from '@mui/icons-material/Chat';
+import { ADMIN, DRIVER, INSTALLER, SUPERADMIN, USER, allRoles } from './roles';
+
+// Single source for both the sidebar and the route guards, so they cannot disagree.
+// A SuperAdmin viewing a company is logged in as that company's Admin, so the fleet
+// modules only need the USER and ADMIN roles.
+export default [
+  [
+    { path: 'driver', titleKey: 'menuDriver', icon: DirectionsCarIcon, roles: [DRIVER] },
+    { path: 'dashboard', titleKey: 'menuDashboard', icon: DashboardIcon, roles: [ADMIN] },
+    { path: 'map', titleKey: 'menuMap', icon: MapIcon, roles: [USER, ADMIN] },
+    { path: 'vehicles', titleKey: 'menuVehicles', icon: LocalShippingIcon, roles: [USER, ADMIN] },
+    { path: 'messages', titleKey: 'menuMessages', icon: ChatIcon, roles: [USER, ADMIN] },
+    { path: 'commands', titleKey: 'menuCommands', icon: TerminalIcon, roles: [USER, ADMIN] },
+    { path: 'events', titleKey: 'menuEvents', icon: NotificationsIcon, roles: [USER, ADMIN] },
+    { path: 'reports', titleKey: 'menuReports', icon: AssessmentIcon, roles: [ADMIN] },
+    { path: 'equipment', titleKey: 'menuEquipment', icon: RouterIcon, roles: [ADMIN] },
+    { path: 'geofences', titleKey: 'menuGeofences', icon: FenceIcon, roles: [ADMIN] },
+    { path: 'maintenance', titleKey: 'menuMaintenance', icon: CarRepairIcon, roles: [ADMIN] },
+    {
+      path: 'notifications',
+      titleKey: 'menuNotifications',
+      icon: NotificationAddIcon,
+      roles: [ADMIN],
+    },
+  ],
+  [
+    {
+      path: 'companies',
+      titleKey: 'menuCompanies',
+      icon: BusinessIcon,
+      roles: [SUPERADMIN, INSTALLER],
+    },
+    {
+      path: 'installer',
+      titleKey: 'menuInstaller',
+      icon: BuildIcon,
+      roles: [SUPERADMIN, INSTALLER],
+    },
+    { path: 'users', titleKey: 'menuUsers', icon: ManageAccountsIcon, roles: [SUPERADMIN] },
+    {
+      path: 'command-templates',
+      titleKey: 'menuCommandTemplates',
+      icon: ListAltIcon,
+      roles: [SUPERADMIN],
+    },
+    {
+      path: 'io-mapping',
+      titleKey: 'menuIoMapping',
+      icon: SettingsInputComponentIcon,
+      roles: [SUPERADMIN],
+    },
+    { path: 'audit', titleKey: 'menuAudit', icon: HistoryEduIcon, roles: [SUPERADMIN] },
+    { path: 'system', titleKey: 'menuSystem', icon: DnsIcon, roles: [SUPERADMIN] },
+  ],
+  [{ path: 'settings', titleKey: 'menuSettings', icon: SettingsIcon, roles: allRoles }],
+];

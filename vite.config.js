@@ -9,8 +9,15 @@ export default defineConfig(() => ({
     port: 3000,
     proxy: {
       '/api/socket': 'ws://localhost:8082',
+      // Chat service of the new UI (tools/chat-service).
+      '/chat-api': 'http://localhost:8090',
       '/api': 'http://localhost:8082',
     },
+  },
+  optimizeDeps: {
+    // Only imported lazily by the new UI IMEI scanner; without this the dev server discovers
+    // them on first use and reloads the page, wiping the form.
+    include: ['barcode-detector/ponyfill', 'tesseract.js', '@yudiel/react-qr-scanner'],
   },
   build: {
     outDir: 'build',

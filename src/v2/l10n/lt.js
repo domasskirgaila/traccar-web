@@ -120,6 +120,17 @@ export default {
   companyChange: 'Keisti įmonę',
   installerCompany: 'Įmonė',
   installerNoCompany: 'Pirma pasirinkite įmonę.',
+  scanTitle: 'Nuskaityti IMEI',
+  scanPhoto: 'Fotografuoti etiketę',
+  scanLiveUnavailable:
+    'Gyvas skenavimas kamera veikia tik per saugų (HTTPS) ryšį. Nufotografuokite etiketę: iš nuotraukos nuskaitomas brūkšninis kodas, QR kodas arba atspausdintas numeris.',
+  scanReadingBarcode: 'Ieškoma brūkšninio ar QR kodo...',
+  scanReadingText: 'Kodo nerasta, atpažįstamas atspausdintas numeris...',
+  scanNothingFound:
+    'IMEI nerastas. Pabandykite ryškesnę, iš arčiau padarytą nuotrauką arba įveskite numerį.',
+  scanChoose: 'Pasirinkite IMEI:',
+  scanInvalidHint:
+    'Pilki numeriai neatitinka IMEI kontrolinio skaitmens; prieš išsaugodami juos patikrinkite.',
   installerNew: 'Nauja instaliacija',
   installerVehicleName: 'Transporto priemonė',
   installerVehicleNameHint: 'Pavadinimas ar valstybinis numeris, kurį matys įmonė',

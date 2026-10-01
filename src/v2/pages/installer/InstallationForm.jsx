@@ -6,17 +6,22 @@ import {
   Button,
   Card,
   CardContent,
+  IconButton,
+  InputAdornment,
   MenuItem,
   TextField,
   Typography,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import AddIcon from '@mui/icons-material/Add';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import deviceCategories from '../../../common/util/deviceCategories';
 import { prefixString } from '../../../common/util/stringUtils';
 import { useTranslation } from '../../../common/components/LocalizationProvider';
 import { createCompanyDevice } from '../../common/company';
 import useT from '../../common/useT';
+import { isValidImei } from '../../common/imei';
+import ImeiScanner from './ImeiScanner';
 
 const useStyles = makeStyles()((theme) => ({
   form: {
@@ -47,6 +52,7 @@ const InstallationForm = ({ company, onCreated, title }) => {
   const [item, setItem] = useState(emptyDevice);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const update = (key) => (e) => setItem({ ...item, [key]: e.target.value });
 
@@ -90,7 +96,35 @@ const InstallationForm = ({ company, onCreated, title }) => {
             label="IMEI"
             value={item.uniqueId}
             onChange={update('uniqueId')}
-            slotProps={{ htmlInput: { inputMode: 'numeric' } }}
+            helperText={
+              item.uniqueId.trim().length === 15 && !isValidImei(item.uniqueId.trim())
+                ? t('scanInvalidHint')
+                : undefined
+            }
+            slotProps={{
+              htmlInput: { inputMode: 'numeric' },
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      title={t('scanTitle')}
+                      onClick={() => setScannerOpen(true)}
+                    >
+                      <QrCodeScannerIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          <ImeiScanner
+            open={scannerOpen}
+            onClose={() => setScannerOpen(false)}
+            onDetected={(imei) => {
+              setScannerOpen(false);
+              setItem({ ...item, uniqueId: imei });
+            }}
           />
           <TextField
             required

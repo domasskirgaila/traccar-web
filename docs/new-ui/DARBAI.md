@@ -42,6 +42,7 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 - [ ] **SuperAdmin:** Vartotojai ir rolės → sukurti įmonę, vartotoją, pakeisti rolę, pašalinti.
 - [ ] **SuperAdmin:** IO mapping → atsidaryti „Durys“, išbandyti su ACME mašina, sukurti savo susiejimą, priskirti įmonei.
 - [ ] **Installer:** Instaliacija → įmonė → IMEI `359000000000001` → matyti gyvus IO (`in3` persijungia kas 30 s ir paryškinama).
+- [ ] **Installer telefone:** IMEI lauke paspausti skenavimo mygtuką → „Fotografuoti etiketę“ → nufotografuoti tikro Teltonika įrenginio ar dėžutės etiketę (brūkšninis kodas, QR kodas arba atspausdintas IMEI). Gyvas kameros vaizdas atsiras tik per HTTPS.
 - [ ] **SuperAdmin:** Komandų šablonai → sukurti, priskirti įmonei, patikrinti, kad įmonės vartotojas jį mato. Audito žurnalas, Sistema.
 - [ ] **Admin:** Skydelis → „Tvarkyti skydelį“ (pridėti IO valdiklį, pertempti, pakeisti dydį, išsaugoti), Įrangos valdymas (pridėti / redaguoti / pašalinti / gyvas testas), Geozonos (nubrėžti, pavadinti, pakeisti formą), Techninė priežiūra, Pranešimai, Komandos → „Išsaugotos komandos“, Ataskaitos (sugeneruoti, išsaugoti būdą, eksportuoti į Excel).
 - [ ] **Prisijungimo langas:** prisijungti, neteisingas slaptažodis, kalbos keitimas.
@@ -60,6 +61,8 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 
 ### Serveris ir diegimas
 
+- [ ] **HTTPS naujam UI.** Gyvas IMEI skenavimas kamera naršyklėje veikia tik per HTTPS. Per HTTP veikia tik nuotraukos būdas. Testiniam serveriui reikia HTTPS (pvz. nginx / Caddy su sertifikatu prieš 18082).
+
 - [ ] **Naujo UI įdiegimas į testinį konteinerį:** kompiuteryje `VITE_NEW_UI=1 npm run build`, `build/` aplanką nukopijuoti į serverį (`scp -r build domdom@192.168.0.103:~/new-ui-build`), tada serveryje `docker cp ~/new-ui-build/. traccar-new-ui-test:/opt/traccar/web/`. Kitas būdas: perbuildinti `traccar-new-ui-test` paveikslą.
 - [ ] **Testinio konteinerio duomenys** saugomi konteinerio viduje, ne tome (volume) — sukūrus konteinerį iš naujo, duomenų bazė dings (skriptas demo duomenis atkurs per minutę, bet jūsų rankiniai pakeitimai dings). Jei reikia, pridėkite volume `/opt/traccar/data`.
 - [ ] **Tikri įrenginiai testiniam serveriui:** dabar atidarytas tik 18082 (web). Tikram Teltonika reikia publikuoti jo prievadą (pvz. 5027).
@@ -71,6 +74,7 @@ Montuotojo testui be tikro įrenginio naudokite IMEI **359000000000001–3590000
 
 ## 4. Žinomi apribojimai
 
+- IMEI teksto atpažinimas (OCR) pirmą kartą parsiunčia atpažinimo modelį (~10 MB) iš interneto (jsDelivr CDN), todėl telefonui reikia interneto ryšio. Brūkšninių ir QR kodų skaitymas veikia be interneto. Jei reikės, modelį galima laikyti savo serveryje.
 - Demo (OsmAnd) įrenginiai **negali priimti komandų**, todėl siuntimas jiems baigiasi klaida „Įrenginys neprisijungęs arba nepriima komandų“. Tai tikėtina; su tikru Teltonika turėtų veikti.
 - Gyvi įvykiai rodomi tik tiems tipams, kuriems vartotojas turi „web“ pranešimą (demo — aliarmai).
 - SuperAdmin raktas grįžimui laikomas naršyklės `sessionStorage` 12 val.; uždarius kortelę tenka prisijungti iš naujo.

@@ -257,6 +257,7 @@ def seed(api, settings, companies):
     }
     notifications = api.get('/api/notifications?all=true')
     notified_companies = {n['attributes'].get('demoKey') for n in notifications}
+    geofence_keys = {g['attributes'].get('demoKey') for g in api.get('/api/geofences?all=true')}
     mappings_by_attribute = {
         mapping['attribute']: mapping for mapping in api.get('/api/attributes/computed?all=true')
     }
@@ -354,6 +355,40 @@ def seed(api, settings, companies):
             for user, _ in members:
                 api.link(userId=user['id'], notificationId=notification['id'])
             log(f'created alarm notification for {company["name"]}')
+
+        # A base geofence around the city the demo vehicles circle, for enter/exit events.
+        geofence_key = f'{company["slug"]}-base'
+        if geofence_key not in geofence_keys:
+            _, _, latitude, longitude = next(c for c in COMPANIES if c[0] == company['slug'])
+            geofence = api.post('/api/geofences', {
+                'name': 'Bazė',
+                'area': f'CIRCLE ({latitude} {longitude}, 3000)',
+                'attributes': {'demoKey': geofence_key},
+            })
+            api.unlink(userId=me['id'], geofenceId=geofence['id'])
+            for user, _ in members:
+                api.link(userId=user['id'], geofenceId=geofence['id'])
+            for device in company_devices:
+                api.link(deviceId=device['id'], geofenceId=geofence['id'])
+            notification = api.post('/api/notifications', {
+                'type': 'geofenceEnter',
+                'always': True,
+                'notificators': 'web',
+                'attributes': {'demoKey': f'{company["slug"]}-geofence'},
+            })
+            exit_notification = api.post('/api/notifications', {
+                'type': 'geofenceExit',
+                'always': True,
+                'notificators': 'web',
+                'attributes': {'demoKey': f'{company["slug"]}-geofence-exit'},
+            })
+            for created in (notification, exit_notification):
+                api.unlink(userId=me['id'], notificationId=created['id'])
+                for user, _ in members:
+                    api.link(userId=user['id'], notificationId=created['id'])
+            log(f'created base geofence for {company["name"]}')
+        # New devices of existing companies get the geofence through the UI; demo devices are
+        # only created together with the company, so no extra linking is needed here.
 
         # A demo IO mapping (see the IO mapping page): input 2 is the door switch at ACME.
         if company['slug'] == 'acme':

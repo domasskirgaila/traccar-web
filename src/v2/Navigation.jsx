@@ -34,6 +34,7 @@ const SystemPage = lazy(() => import('./pages/system/SystemPage'));
 const NotificationsPage = lazy(() => import('./pages/notifications/NotificationsPage'));
 const MaintenancePage = lazy(() => import('./pages/maintenance/MaintenancePage'));
 const AuditPage = lazy(() => import('./pages/audit/AuditPage'));
+const GeofencesPage = lazy(() => import('./pages/geofences/GeofencesPage'));
 
 const pages = {
   companies: <CompaniesPage />,
@@ -53,6 +54,7 @@ const pages = {
   notifications: <NotificationsPage />,
   maintenance: <MaintenancePage />,
   audit: <AuditPage />,
+  geofences: <GeofencesPage />,
 };
 
 const Navigation = () => {

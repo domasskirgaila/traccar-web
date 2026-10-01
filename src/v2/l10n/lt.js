@@ -1,4 +1,8 @@
 export default {
+  loginTitle: 'Prisijungimas',
+  loginTagline: 'Jūsų parkas gyvai žemėlapyje, kartu su komandomis, ataskaitomis ir įspėjimais.',
+  loginFailed: 'Neteisingas el. paštas arba slaptažodis.',
+  loginOr: 'arba',
   menuDashboard: 'Skydelis',
   menuMap: 'Žemėlapis',
   menuVehicles: 'Transportas',

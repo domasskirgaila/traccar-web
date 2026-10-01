@@ -11,8 +11,8 @@ import menu from './common/menu';
 import { ADMIN, USER } from './common/roles';
 import PlaceholderPage from './pages/PlaceholderPage';
 
-// Login, registration and password reset are shared with the old UI for now.
-const LoginPage = lazy(() => import('../login/LoginPage'));
+// Registration and password reset are shared with the old UI for now.
+const LoginPage = lazy(() => import('./pages/login/LoginPage'));
 const RegisterPage = lazy(() => import('../login/RegisterPage'));
 const ResetPasswordPage = lazy(() => import('../login/ResetPasswordPage'));
 const ChangeServerPage = lazy(() => import('../login/ChangeServerPage'));

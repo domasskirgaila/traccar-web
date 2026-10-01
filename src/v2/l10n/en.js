@@ -1,4 +1,8 @@
 export default {
+  loginTitle: 'Sign in',
+  loginTagline: 'Your fleet live on the map, with commands, reports and alerts in one place.',
+  loginFailed: 'Wrong email or password.',
+  loginOr: 'or',
   menuDashboard: 'Dashboard',
   menuMap: 'Live map',
   menuVehicles: 'Vehicles',

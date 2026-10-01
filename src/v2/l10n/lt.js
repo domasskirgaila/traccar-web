@@ -21,6 +21,15 @@ export default {
   menuInstaller: 'Instaliacija',
   menuUsers: 'Vartotojai ir rolės',
   menuIoMapping: 'IO mapping',
+  menuCommandTemplates: 'Komandų šablonai',
+  templatesIntro:
+    'Vieną kartą aprašytos komandos, kuriomis dalijamasi su pasirinktomis įmonėmis. Jas gauna įmonių vartotojai ir visa esama bei būsima įranga; įmonių Admin jų keisti negali.',
+  templatesNew: 'Naujas šablonas',
+  templatesNone: 'Komandų šablonų dar nėra.',
+  templatesAssignHint:
+    'Šią komandą gaus visi pasirinktų įmonių vartotojai ir visa esama bei būsima įranga.',
+  templatesRemoveHint: 'Komanda dings iš visų įmonių, kurioms ji priskirta.',
+  templatesShared: 'Bendras šablonas',
   menuSettings: 'Nustatymai',
   roleUser: 'Vartotojas',
   roleAdmin: 'Admin',

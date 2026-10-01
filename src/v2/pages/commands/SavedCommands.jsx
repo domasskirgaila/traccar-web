@@ -2,6 +2,7 @@ import { useReducer, useState } from 'react';
 import {
   Button,
   Card,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -132,14 +133,19 @@ const SavedCommands = () => {
             <ListItem
               key={command.id}
               secondaryAction={
-                <>
-                  <IconButton onClick={() => setEditing(command)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton onClick={() => setRemoving(command)}>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </>
+                // Templates from the SuperAdmin are shared by several companies.
+                command.attributes.v2Global ? (
+                  <Chip size="small" variant="outlined" label={t('templatesShared')} />
+                ) : (
+                  <>
+                    <IconButton onClick={() => setEditing(command)}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton onClick={() => setRemoving(command)}>
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </>
+                )
               }
             >
               <ListItemText

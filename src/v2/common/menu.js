@@ -10,6 +10,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputComponent';
 import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import { ADMIN, INSTALLER, SUPERADMIN, USER, allRoles } from './roles';
 
 // Single source for both the sidebar and the route guards, so they cannot disagree.
@@ -39,6 +40,12 @@ export default [
       roles: [SUPERADMIN, INSTALLER],
     },
     { path: 'users', titleKey: 'menuUsers', icon: ManageAccountsIcon, roles: [SUPERADMIN] },
+    {
+      path: 'command-templates',
+      titleKey: 'menuCommandTemplates',
+      icon: ListAltIcon,
+      roles: [SUPERADMIN],
+    },
     {
       path: 'io-mapping',
       titleKey: 'menuIoMapping',

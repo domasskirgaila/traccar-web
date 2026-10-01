@@ -20,6 +20,15 @@ export default {
   menuInstaller: 'Installation',
   menuUsers: 'Users & roles',
   menuIoMapping: 'IO mapping',
+  menuCommandTemplates: 'Command templates',
+  templatesIntro:
+    'Commands defined once and shared with chosen companies. Their users and all current and future devices get them; company Admins cannot change them.',
+  templatesNew: 'New template',
+  templatesNone: 'No command templates yet.',
+  templatesAssignHint:
+    'All users and all current and future equipment of the chosen companies get this command.',
+  templatesRemoveHint: 'The command disappears from every company it is assigned to.',
+  templatesShared: 'Shared template',
   menuSettings: 'Settings',
   roleUser: 'User',
   roleAdmin: 'Admin',

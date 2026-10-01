@@ -8,11 +8,11 @@ import ErrorHandler from '../common/components/ErrorHandler';
 import NativeInterface from '../common/components/NativeInterface';
 import ServerProvider from '../ServerProvider';
 import ErrorBoundary from '../ErrorBoundary';
-import preloadImages from '../map/core/preloadImages';
 import ThemeProvider from './theme/ThemeProvider';
 import Navigation from './Navigation';
 
-preloadImages();
+// Starts preparing map icons right away, like the old UI, without bundling the map engine.
+import './common/mapImages';
 
 const root = createRoot(document.getElementById('root'));
 root.render(

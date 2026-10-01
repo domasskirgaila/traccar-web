@@ -17,6 +17,7 @@ import { devicesActions } from '../../../store';
 import usePersistedState from '../../../common/util/usePersistedState';
 import useVehicles from '../../common/useVehicles';
 import useT from '../../common/useT';
+import { useMapImagesReady } from '../../common/mapImages';
 import VehicleList from './VehicleList';
 import VehiclePanel from './VehiclePanel';
 
@@ -75,6 +76,7 @@ const MapPage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
+  const mapImagesLoaded = useMapImagesReady();
 
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = usePersistedState('v2VehicleStatus', 'all');
@@ -115,18 +117,20 @@ const MapPage = () => {
         </Paper>
       )}
       <div className={classes.map}>
-        <MapView>
-          <MapGeofence />
-          <MapLiveRoutes deviceIds={deviceIds} />
-          <MapPositionMarkers
-            positions={positions}
-            onMarkerClick={onMarkerClick}
-            selectedPosition={selectedPosition}
-            showStatus
-          />
-          <MapDefaultCamera filteredPositions={positions} />
-          <MapSelectedDevice />
-        </MapView>
+        {mapImagesLoaded && (
+          <MapView>
+            <MapGeofence />
+            <MapLiveRoutes deviceIds={deviceIds} />
+            <MapPositionMarkers
+              positions={positions}
+              onMarkerClick={onMarkerClick}
+              selectedPosition={selectedPosition}
+              showStatus
+            />
+            <MapDefaultCamera filteredPositions={positions} />
+            <MapSelectedDevice />
+          </MapView>
+        )}
         <MapScale />
         <MapCurrentLocation />
         {selectedDevice && (

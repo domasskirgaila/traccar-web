@@ -27,6 +27,7 @@ import fetchOrThrow from '../../../common/util/fetchOrThrow';
 import { useCatch } from '../../../reactHelper';
 import ConfirmDialog from '../../common/ConfirmDialog';
 import useT from '../../common/useT';
+import { useMapImagesReady } from '../../common/mapImages';
 import GeofenceDraw from './GeofenceDraw';
 
 const useStyles = makeStyles()((theme) => ({
@@ -80,6 +81,7 @@ const GeofencesPage = () => {
   const { classes } = useStyles();
   const t = useT();
   const dispatch = useDispatch();
+  const mapImagesLoaded = useMapImagesReady();
 
   const items = useSelector((state) => state.geofences.items);
   const geofences = useMemo(
@@ -179,17 +181,19 @@ const GeofencesPage = () => {
         </List>
       </Paper>
       <div className={classes.map}>
-        <MapView>
-          <GeofenceDraw
-            geofences={geofences}
-            selectedId={selectedId}
-            onCreate={(area) =>
-              setNaming({ name: `${t('geofencesDefaultName')} ${geofences.length + 1}`, area })
-            }
-            onChange={handleShapeChange}
-            onDelete={(id) => setRemoving(items[id])}
-          />
-        </MapView>
+        {mapImagesLoaded && (
+          <MapView>
+            <GeofenceDraw
+              geofences={geofences}
+              selectedId={selectedId}
+              onCreate={(area) =>
+                setNaming({ name: `${t('geofencesDefaultName')} ${geofences.length + 1}`, area })
+              }
+              onChange={handleShapeChange}
+              onDelete={(id) => setRemoving(items[id])}
+            />
+          </MapView>
+        )}
         <MapScale />
         <MapCurrentLocation />
       </div>

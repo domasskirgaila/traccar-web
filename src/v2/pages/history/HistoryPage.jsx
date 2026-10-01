@@ -32,6 +32,7 @@ import { useAsyncTask } from '../../../reactHelper';
 import { useTranslation } from '../../../common/components/LocalizationProvider';
 import { formatDistanceShort, formatSpeedShort, useUnits } from '../../common/format';
 import useT from '../../common/useT';
+import { useMapImagesReady } from '../../common/mapImages';
 import { periodRange } from '../reports/reportTypes';
 
 const useStyles = makeStyles()((theme) => ({
@@ -108,6 +109,7 @@ const HistoryPage = () => {
   const sharedT = useTranslation();
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
+  const mapImagesLoaded = useMapImagesReady();
   const { speedUnit, distanceUnit } = useUnits();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -281,16 +283,18 @@ const HistoryPage = () => {
         )}
       </Paper>
       <div className={classes.map}>
-        <MapView>
-          <MapGeofence />
-          {positions && positions.length > 0 && (
-            <>
-              <MapRoutePath positions={positions} />
-              <MapRoutePoints positions={positions} showSpeedControl={desktop} />
-              <MapPositionMarkers positions={currentMarker} />
-            </>
-          )}
-        </MapView>
+        {mapImagesLoaded && (
+          <MapView>
+            <MapGeofence />
+            {positions && positions.length > 0 && (
+              <>
+                <MapRoutePath positions={positions} />
+                <MapRoutePoints positions={positions} showSpeedControl={desktop} />
+                <MapPositionMarkers positions={currentMarker} />
+              </>
+            )}
+          </MapView>
+        )}
         <MapScale />
         {positions && positions.length > 0 && <MapCamera positions={positions} />}
         {positions && positions.length > 1 && (

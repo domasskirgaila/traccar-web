@@ -4,19 +4,22 @@ export const USER = 'user';
 export const ADMIN = 'admin';
 export const SUPERADMIN = 'superadmin';
 export const INSTALLER = 'installer';
+export const DRIVER = 'driver';
 
-export const allRoles = [USER, ADMIN, SUPERADMIN, INSTALLER];
+export const allRoles = [USER, DRIVER, ADMIN, SUPERADMIN, INSTALLER];
 
 export const roleTitleKeys = {
   [USER]: 'roleUser',
   [ADMIN]: 'roleAdmin',
   [SUPERADMIN]: 'roleSuperAdmin',
   [INSTALLER]: 'roleInstaller',
+  [DRIVER]: 'roleDriver',
 };
 
 // Roles are derived from standard Traccar user fields, so the backend stays unchanged:
 // administrator -> SuperAdmin (or Installer when attributes.role is "installer"),
-// manager (userLimit != 0) -> Admin, i.e. one company, anyone else -> User.
+// manager (userLimit != 0) -> Admin, i.e. one company, attributes.role "driver" -> Driver,
+// anyone else -> User.
 // Only the backend enforces permissions; the role just decides what the UI shows.
 export const getRole = (user) => {
   if (!user) {
@@ -28,7 +31,7 @@ export const getRole = (user) => {
   if ((user.userLimit || 0) !== 0) {
     return ADMIN;
   }
-  return USER;
+  return user.attributes?.role === DRIVER ? DRIVER : USER;
 };
 
 export const useRole = () => useSelector((state) => getRole(state.session.user));
@@ -43,6 +46,8 @@ export const roleHome = (role) => {
       return '/companies';
     case INSTALLER:
       return '/installer';
+    case DRIVER:
+      return '/driver';
     default:
       return '/map';
   }

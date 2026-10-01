@@ -453,11 +453,13 @@ def seed(api, settings, companies):
 def osmand_url(settings):
     if settings.get('OSMAND_URL'):
         return settings['OSMAND_URL']
+    # The container can be on several networks (e.g. shared with the chat service); any of its
+    # addresses is reachable from the host.
     address = subprocess.run(
         ['docker', 'inspect', settings['CONTAINER'], '--format',
-         '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'],
+         '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}'],
         capture_output=True, text=True, check=True,
-    ).stdout.strip()
+    ).stdout.split()[0]
     return f'http://{address}:5055'
 
 

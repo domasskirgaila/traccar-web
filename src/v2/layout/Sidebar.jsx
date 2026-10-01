@@ -1,5 +1,8 @@
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import {
+  Badge,
   Divider,
   Drawer,
   List,
@@ -11,7 +14,8 @@ import {
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import menu from '../common/menu';
-import { useRole } from '../common/roles';
+import { ADMIN, USER, useRole } from '../common/roles';
+import { useChatSummary } from '../common/chat';
 import useT from '../common/useT';
 
 const useStyles = makeStyles()((theme) => ({
@@ -41,6 +45,20 @@ const Sidebar = ({ desktop, open, onClose }) => {
   const role = useRole();
   const location = useLocation();
 
+  // Unread driver messages for dispatchers, shown on the Messages item.
+  const devices = useSelector((state) => state.devices.items);
+  const dispatcher = role === USER || role === ADMIN;
+  const deviceIds = useMemo(
+    () => (dispatcher ? Object.keys(devices).map(Number) : []),
+    [devices, dispatcher],
+  );
+  const summary = useChatSummary(deviceIds, 30000);
+  const unread =
+    summary && !summary.unavailable
+      ? Object.values(summary).reduce((sum, item) => sum + (item.unread || 0), 0)
+      : 0;
+  const badges = { messages: unread };
+
   const sections = menu.map((items) => items.filter((item) => item.roles.includes(role)));
   const footer = sections.pop();
 
@@ -57,7 +75,9 @@ const Sidebar = ({ desktop, open, onClose }) => {
             onClick={onClose}
           >
             <ListItemIcon>
-              <Icon />
+              <Badge color="error" badgeContent={badges[item.path] || 0}>
+                <Icon />
+              </Badge>
             </ListItemIcon>
             <ListItemText primary={t(item.titleKey)} />
           </ListItemButton>

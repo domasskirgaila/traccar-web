@@ -9,6 +9,8 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 import HistoryIcon from '@mui/icons-material/History';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ChatIcon from '@mui/icons-material/Chat';
+import { useChatSummary } from '../../common/chat';
 import PositionValue from '../../../common/components/PositionValue';
 import { useTranslation } from '../../../common/components/LocalizationProvider';
 import usePositionAttributes from '../../../common/attributes/usePositionAttributes';
@@ -107,6 +109,9 @@ const VehiclePanel = ({ device, position, onClose, onCenter }) => {
   const readonly = useSelector((state) => state.session.user.readonly);
 
   const [ioOpen, setIoOpen] = useState(false);
+  const chatSummary = useChatSummary([device.id], 30000);
+  const driver = chatSummary?.[device.id]?.driver;
+  const unread = chatSummary?.[device.id]?.unread || 0;
 
   const status = vehicleStatus(device);
   const attributes = position?.attributes || {};
@@ -122,6 +127,7 @@ const VehiclePanel = ({ device, position, onClose, onCenter }) => {
           </Typography>
           <Typography variant="caption" color="textSecondary">
             {`${t('vehicleLastUpdate')}: ${formatRelative(device.lastUpdate) ?? '—'}`}
+            {driver && ` · ${t('roleDriver')}: ${driver.userName}`}
           </Typography>
         </div>
         <Chip size="small" color={statusColors[status]} label={t(statusTitleKeys[status])} />
@@ -210,6 +216,15 @@ const VehiclePanel = ({ device, position, onClose, onCenter }) => {
         >
           {t('historyAction')}
         </Button>
+        {chatSummary && !chatSummary.unavailable && (
+          <Button
+            size="small"
+            startIcon={<ChatIcon />}
+            onClick={() => navigate(`/messages?deviceId=${device.id}`)}
+          >
+            {unread ? `${t('chatWrite')} (${unread})` : t('chatWrite')}
+          </Button>
+        )}
       </div>
     </Card>
   );

@@ -11,7 +11,15 @@ import {
   TextField,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { ADMIN, INSTALLER, SUPERADMIN, USER, getRole, roleTitleKeys } from '../../common/roles';
+import {
+  ADMIN,
+  DRIVER,
+  INSTALLER,
+  SUPERADMIN,
+  USER,
+  getRole,
+  roleTitleKeys,
+} from '../../common/roles';
 import { RoleChangeError, changeRole, createUser } from '../../common/userRoles';
 import fetchOrThrow from '../../../common/util/fetchOrThrow';
 import useT from '../../common/useT';
@@ -25,7 +33,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const roles = [USER, ADMIN, INSTALLER, SUPERADMIN];
+const roles = [USER, DRIVER, ADMIN, INSTALLER, SUPERADMIN];
 
 // Creates a user or company (user === null) or edits an existing one.
 // A User always belongs to a company; an Admin is a company of its own.
@@ -42,7 +50,7 @@ const UserDialog = ({ user, initialRole, currentCompany, companies, onClose, onS
   const [saving, setSaving] = useState(false);
 
   const isNew = !user;
-  const needsCompany = role === USER;
+  const needsCompany = role === USER || role === DRIVER;
   const escalates = (role === INSTALLER || role === SUPERADMIN) && getRole(user) !== role;
   const valid = name.trim() && email.trim() && (!isNew || password) && (!needsCompany || company);
 
@@ -129,7 +137,7 @@ const UserDialog = ({ user, initialRole, currentCompany, companies, onClose, onS
             )}
           />
         )}
-        {role === ADMIN && !isNew && getRole(user) === USER && (
+        {role === ADMIN && !isNew && [USER, DRIVER].includes(getRole(user)) && (
           <Alert severity="info">{t('usersBecomesCompany')}</Alert>
         )}
         {escalates && <Alert severity="warning">{t('usersEscalationWarning')}</Alert>}

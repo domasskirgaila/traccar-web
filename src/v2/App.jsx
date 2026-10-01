@@ -7,7 +7,7 @@ import { sessionActions } from '../store';
 import TermsDialog from '../common/components/TermsDialog';
 import Loader from '../common/components/Loader';
 import fetchOrThrow from '../common/util/fetchOrThrow';
-import { ADMIN, USER, useRole } from './common/roles';
+import { ADMIN, DRIVER, USER, useRole } from './common/roles';
 import Layout from './layout/Layout';
 
 const App = () => {
@@ -54,9 +54,9 @@ const App = () => {
     return <TermsDialog open onCancel={() => navigate('/login')} onAccept={() => acceptTerms()} />;
   }
 
-  // Live fleet data is only loaded inside one company (User or Admin, including a SuperAdmin
-  // viewing a company), never for the SuperAdmin or Installer company list.
-  const fleetLoaded = role === USER || role === ADMIN;
+  // Live fleet data is only loaded inside one company (User, Driver or Admin, including a
+  // SuperAdmin viewing a company), never for the SuperAdmin or Installer company list.
+  const fleetLoaded = role === USER || role === ADMIN || role === DRIVER;
 
   return (
     <>

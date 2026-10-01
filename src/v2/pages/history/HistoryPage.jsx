@@ -33,6 +33,8 @@ import { useTranslation } from '../../../common/components/LocalizationProvider'
 import { formatDistanceShort, formatSpeedShort, useUnits } from '../../common/format';
 import useT from '../../common/useT';
 import { useMapImagesReady } from '../../common/mapImages';
+import { useVisibleDevices } from '../../common/chat';
+import { DRIVER, useRole } from '../../common/roles';
 import { periodRange } from '../reports/reportTypes';
 
 const useStyles = makeStyles()((theme) => ({
@@ -113,7 +115,9 @@ const HistoryPage = () => {
   const { speedUnit, distanceUnit } = useUnits();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const items = useSelector((state) => state.devices.items);
+  const role = useRole();
+  const allItems = useSelector((state) => state.devices.items);
+  const items = useVisibleDevices(allItems, role === DRIVER);
   const devices = useMemo(
     () => Object.values(items).sort((a, b) => a.name.localeCompare(b.name)),
     [items],

@@ -16,17 +16,26 @@ import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 import CarRepairIcon from '@mui/icons-material/CarRepair';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import FenceIcon from '@mui/icons-material/Fence';
-import { ADMIN, INSTALLER, SUPERADMIN, USER, allRoles } from './roles';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import ChatIcon from '@mui/icons-material/Chat';
+import { ADMIN, DRIVER, INSTALLER, SUPERADMIN, USER, allRoles } from './roles';
 
 // Single source for both the sidebar and the route guards, so they cannot disagree.
 // A SuperAdmin viewing a company is logged in as that company's Admin, so the fleet
 // modules only need the USER and ADMIN roles.
 export default [
   [
+    { path: 'driver', titleKey: 'menuDriver', icon: DirectionsCarIcon, roles: [DRIVER] },
     { path: 'dashboard', titleKey: 'menuDashboard', icon: DashboardIcon, roles: [ADMIN] },
     { path: 'map', titleKey: 'menuMap', icon: MapIcon, roles: [USER, ADMIN] },
     { path: 'vehicles', titleKey: 'menuVehicles', icon: LocalShippingIcon, roles: [USER, ADMIN] },
-    { path: 'commands', titleKey: 'menuCommands', icon: TerminalIcon, roles: [USER, ADMIN] },
+    { path: 'messages', titleKey: 'menuMessages', icon: ChatIcon, roles: [USER, ADMIN] },
+    {
+      path: 'commands',
+      titleKey: 'menuCommands',
+      icon: TerminalIcon,
+      roles: [USER, ADMIN, DRIVER],
+    },
     { path: 'events', titleKey: 'menuEvents', icon: NotificationsIcon, roles: [USER, ADMIN] },
     { path: 'reports', titleKey: 'menuReports', icon: AssessmentIcon, roles: [ADMIN] },
     { path: 'equipment', titleKey: 'menuEquipment', icon: RouterIcon, roles: [ADMIN] },

@@ -112,6 +112,9 @@ def traccar_get(path, session):
             return json.loads(response.read() or 'null')
     except urllib.error.HTTPError:
         return None
+    except (urllib.error.URLError, OSError) as error:
+        print(f'Traccar not reachable: {error}', flush=True)
+        raise HttpError(502, 'traccar not reachable') from None
 
 
 def role_of(user):

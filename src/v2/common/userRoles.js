@@ -1,5 +1,5 @@
 import fetchOrThrow from '../../common/util/fetchOrThrow';
-import { ADMIN, INSTALLER, SUPERADMIN, USER, getRole } from './roles';
+import { ADMIN, DRIVER, INSTALLER, SUPERADMIN, USER, getRole } from './roles';
 
 const request = (method, url, body) =>
   fetchOrThrow(url, {
@@ -40,6 +40,15 @@ export const roleFields = (user, role) => {
         deviceLimit: -1,
         deviceReadonly: false,
         limitCommands: false,
+      };
+    case DRIVER:
+      return {
+        ...base,
+        administrator: false,
+        attributes: { ...attributes, role },
+        userLimit: 0,
+        deviceReadonly: true,
+        limitCommands: true,
       };
     case USER:
     default:
@@ -89,8 +98,11 @@ const leaveCompany = async (userId, companyId) => {
 
 export class RoleChangeError extends Error {}
 
-// companyId: the company a User belongs to after the change (required for USER),
-// currentCompanyId: the company the user belongs to now, if it is a User.
+// Users and Drivers belong to a company; Admins are one, administrators have none.
+const inCompany = (role) => role === USER || role === DRIVER;
+
+// companyId: the company a User or Driver belongs to after the change,
+// currentCompanyId: the company the user belongs to now, if it is a User or Driver.
 export const changeRole = async (user, role, { companyId, currentCompanyId }) => {
   const oldRole = getRole(user);
   if (oldRole === ADMIN && role !== ADMIN) {
@@ -102,11 +114,15 @@ export const changeRole = async (user, role, { companyId, currentCompanyId }) =>
       throw new RoleChangeError('usersCompanyNotEmpty');
     }
   }
-  if (oldRole === USER && currentCompanyId && (role !== USER || companyId !== currentCompanyId)) {
+  if (
+    inCompany(oldRole) &&
+    currentCompanyId &&
+    (!inCompany(role) || companyId !== currentCompanyId)
+  ) {
     await leaveCompany(user.id, currentCompanyId);
   }
   const response = await request('PUT', `/api/users/${user.id}`, roleFields(user, role));
-  if (role === USER && companyId && companyId !== currentCompanyId) {
+  if (inCompany(role) && companyId && companyId !== currentCompanyId) {
     await joinCompany(user.id, companyId);
   }
   return response.json();
@@ -119,7 +135,7 @@ export const createUser = async ({ name, email, password }, role, companyId) => 
     roleFields({ name, email, password, attributes: {} }, role),
   );
   const created = await response.json();
-  if (role === USER && companyId) {
+  if (inCompany(role) && companyId) {
     await joinCompany(created.id, companyId);
   }
   return created;

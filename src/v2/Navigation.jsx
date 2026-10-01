@@ -8,7 +8,7 @@ import App from './App';
 import RoleRoute from './common/RoleRoute';
 import HomeRedirect from './common/HomeRedirect';
 import menu from './common/menu';
-import { ADMIN, USER } from './common/roles';
+import { ADMIN, DRIVER, USER } from './common/roles';
 import PlaceholderPage from './pages/PlaceholderPage';
 
 // Registration and password reset are shared with the old UI for now.
@@ -35,6 +35,8 @@ const NotificationsPage = lazy(() => import('./pages/notifications/Notifications
 const MaintenancePage = lazy(() => import('./pages/maintenance/MaintenancePage'));
 const AuditPage = lazy(() => import('./pages/audit/AuditPage'));
 const GeofencesPage = lazy(() => import('./pages/geofences/GeofencesPage'));
+const DriverPage = lazy(() => import('./pages/driver/DriverPage'));
+const MessagesPage = lazy(() => import('./pages/messages/MessagesPage'));
 
 const pages = {
   companies: <CompaniesPage />,
@@ -55,6 +57,8 @@ const pages = {
   maintenance: <MaintenancePage />,
   audit: <AuditPage />,
   geofences: <GeofencesPage />,
+  driver: <DriverPage />,
+  messages: <MessagesPage />,
 };
 
 const Navigation = () => {
@@ -109,7 +113,7 @@ const Navigation = () => {
               />
             </Route>
           ))}
-          <Route element={<RoleRoute roles={[USER, ADMIN]} />}>
+          <Route element={<RoleRoute roles={[USER, ADMIN, DRIVER]} />}>
             <Route path="history" element={<HistoryPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

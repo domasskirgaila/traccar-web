@@ -25,7 +25,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useAsyncTask, useCatch } from '../../../reactHelper';
 import fetchOrThrow from '../../../common/util/fetchOrThrow';
 import ConfirmDialog from '../../common/ConfirmDialog';
-import { ADMIN, USER, getRole, isCompany, roleTitleKeys } from '../../common/roles';
+import { ADMIN, DRIVER, USER, getRole, isCompany, roleTitleKeys } from '../../common/roles';
 import useT from '../../common/useT';
 import UserDialog, { deleteUser } from './UserDialog';
 
@@ -65,7 +65,13 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const roleColors = { user: 'default', admin: 'primary', installer: 'warning', superadmin: 'error' };
+const roleColors = {
+  user: 'default',
+  driver: 'success',
+  admin: 'primary',
+  installer: 'warning',
+  superadmin: 'error',
+};
 
 // SuperAdmin user and role management across all companies.
 const UsersPage = () => {
@@ -244,7 +250,10 @@ const UsersPage = () => {
                           size="small"
                           disabled={self}
                           onClick={() =>
-                            setDialog({ user, company: role === USER ? company : null })
+                            setDialog({
+                              user,
+                              company: role === USER || role === DRIVER ? company : null,
+                            })
                           }
                         >
                           <EditIcon fontSize="small" />

@@ -181,7 +181,14 @@ const CompaniesPage = () => {
               </Typography>
               {summary ? (
                 <div className={classes.stats}>
-                  <Stat label={t('companyDevices')} value={summary.devices} />
+                  <Stat
+                    label={t('companyDevices')}
+                    value={
+                      selected.deviceLimit >= 0
+                        ? `${summary.devices} / ${selected.deviceLimit}`
+                        : summary.devices
+                    }
+                  />
                   <Stat label={t('companyOnline')} value={summary.online} />
                   <Stat label={t('companyOffline')} value={summary.offline} />
                   <Stat label={t('companyUsers')} value={summary.users} />

@@ -222,6 +222,7 @@ const UsersPage = () => {
               <TableCell>{t('usersEmail')}</TableCell>
               <TableCell>{t('usersRole')}</TableCell>
               <TableCell>{t('installerCompany')}</TableCell>
+              <TableCell>{t('usersDeviceLimitShort')}</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -243,6 +244,9 @@ const UsersPage = () => {
                     />
                   </TableCell>
                   <TableCell>{company?.name ?? '—'}</TableCell>
+                  <TableCell>
+                    {role === ADMIN && (user.deviceLimit >= 0 ? user.deviceLimit : '∞')}
+                  </TableCell>
                   <TableCell className={classes.actions}>
                     <Tooltip title={self ? t('usersSelf') : t('usersEdit')}>
                       <span>

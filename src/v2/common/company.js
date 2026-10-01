@@ -45,7 +45,29 @@ export const linkDeviceToCompany = async (deviceId, companyId, creatorId) => {
   }
 };
 
+export class DeviceLimitError extends Error {
+  constructor(limit) {
+    super(`device limit ${limit} reached`);
+    this.limit = limit;
+  }
+}
+
+// Traccar checks a company's device limit only when its own Admin adds a device, not when an
+// Installer or SuperAdmin (administrators) does, so the new UI checks it for everyone.
+const checkDeviceLimit = async (companyId) => {
+  const [company, devices] = await Promise.all([
+    fetchOrThrow(`/api/users/${companyId}`).then((response) => response.json()),
+    fetchOrThrow(`/api/devices?userId=${companyId}&excludeAttributes=true`).then((response) =>
+      response.json(),
+    ),
+  ]);
+  if (company.deviceLimit >= 0 && devices.length >= company.deviceLimit) {
+    throw new DeviceLimitError(company.deviceLimit);
+  }
+};
+
 export const createCompanyDevice = async (device, companyId, creatorId) => {
+  await checkDeviceLimit(companyId);
   const response = await fetchOrThrow('/api/devices', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

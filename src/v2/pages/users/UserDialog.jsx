@@ -46,13 +46,24 @@ const UserDialog = ({ user, initialRole, currentCompany, companies, onClose, onS
   const [password, setPassword] = useState('');
   const [role, setRole] = useState(() => (user ? getRole(user) : initialRole));
   const [company, setCompany] = useState(currentCompany || null);
+  // Empty means unlimited (-1 in Traccar).
+  const [deviceLimit, setDeviceLimit] = useState(() =>
+    user?.deviceLimit > 0 ? String(user.deviceLimit) : '',
+  );
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const isNew = !user;
   const needsCompany = role === USER || role === DRIVER;
   const escalates = (role === INSTALLER || role === SUPERADMIN) && getRole(user) !== role;
-  const valid = name.trim() && email.trim() && (!isNew || password) && (!needsCompany || company);
+  const limitValid = deviceLimit === '' || /^\d+$/.test(deviceLimit);
+  const valid =
+    name.trim() &&
+    email.trim() &&
+    (!isNew || password) &&
+    (!needsCompany || company) &&
+    (role !== ADMIN || limitValid);
+  const limitValue = role === ADMIN && deviceLimit !== '' ? Number(deviceLimit) : -1;
 
   const handleSave = async () => {
     setError(null);
@@ -64,6 +75,7 @@ const UserDialog = ({ user, initialRole, currentCompany, companies, onClose, onS
           { name: name.trim(), email: email.trim(), password },
           role,
           company?.id,
+          role === ADMIN ? limitValue : undefined,
         );
       } else {
         const details = { ...user, name: name.trim(), email: email.trim() };
@@ -73,6 +85,7 @@ const UserDialog = ({ user, initialRole, currentCompany, companies, onClose, onS
         saved = await changeRole(details, role, {
           companyId: company?.id,
           currentCompanyId: currentCompany?.id,
+          deviceLimit: role === ADMIN ? limitValue : undefined,
         });
       }
       onSaved(saved);
@@ -125,6 +138,17 @@ const UserDialog = ({ user, initialRole, currentCompany, companies, onClose, onS
             </MenuItem>
           ))}
         </TextField>
+        {role === ADMIN && (
+          <TextField
+            type="number"
+            label={t('usersDeviceLimit')}
+            helperText={limitValid ? t('usersDeviceLimitHint') : t('usersDeviceLimitInvalid')}
+            error={!limitValid}
+            value={deviceLimit}
+            onChange={(e) => setDeviceLimit(e.target.value)}
+            slotProps={{ htmlInput: { min: 0, step: 1 } }}
+          />
+        )}
         {needsCompany && (
           <Autocomplete
             options={companies}

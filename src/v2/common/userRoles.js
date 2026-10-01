@@ -17,8 +17,16 @@ const permission = (method, body) =>
 
 const getJson = async (url) => (await fetchOrThrow(url)).json();
 
+// Company device limit: -1 means unlimited. Traccar stores 0 (no devices) when it is unset.
+const companyDeviceLimit = (user, deviceLimit) => {
+  if (deviceLimit !== undefined) {
+    return deviceLimit;
+  }
+  return user.deviceLimit && user.deviceLimit > 0 ? user.deviceLimit : -1;
+};
+
 // Traccar user fields for each role of the new UI.
-export const roleFields = (user, role) => {
+export const roleFields = (user, role, deviceLimit) => {
   const attributes = { ...user.attributes };
   delete attributes.role;
   const base = { ...user, attributes, readonly: false };
@@ -37,7 +45,7 @@ export const roleFields = (user, role) => {
         ...base,
         administrator: false,
         userLimit: user.userLimit > 0 ? user.userLimit : 50,
-        deviceLimit: -1,
+        deviceLimit: companyDeviceLimit(user, deviceLimit),
         deviceReadonly: false,
         limitCommands: false,
       };
@@ -103,7 +111,7 @@ const inCompany = (role) => role === USER || role === DRIVER;
 
 // companyId: the company a User or Driver belongs to after the change,
 // currentCompanyId: the company the user belongs to now, if it is a User or Driver.
-export const changeRole = async (user, role, { companyId, currentCompanyId }) => {
+export const changeRole = async (user, role, { companyId, currentCompanyId, deviceLimit }) => {
   const oldRole = getRole(user);
   if (oldRole === ADMIN && role !== ADMIN) {
     const [users, devices] = await Promise.all([
@@ -121,18 +129,22 @@ export const changeRole = async (user, role, { companyId, currentCompanyId }) =>
   ) {
     await leaveCompany(user.id, currentCompanyId);
   }
-  const response = await request('PUT', `/api/users/${user.id}`, roleFields(user, role));
+  const response = await request(
+    'PUT',
+    `/api/users/${user.id}`,
+    roleFields(user, role, deviceLimit),
+  );
   if (inCompany(role) && companyId && companyId !== currentCompanyId) {
     await joinCompany(user.id, companyId);
   }
   return response.json();
 };
 
-export const createUser = async ({ name, email, password }, role, companyId) => {
+export const createUser = async ({ name, email, password }, role, companyId, deviceLimit) => {
   const response = await request(
     'POST',
     '/api/users',
-    roleFields({ name, email, password, attributes: {} }, role),
+    roleFields({ name, email, password, attributes: {} }, role, deviceLimit),
   );
   const created = await response.json();
   if (inCompany(role) && companyId) {

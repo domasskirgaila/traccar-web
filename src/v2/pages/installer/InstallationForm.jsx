@@ -18,7 +18,7 @@ import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import deviceCategories from '../../../common/util/deviceCategories';
 import { prefixString } from '../../../common/util/stringUtils';
 import { useTranslation } from '../../../common/components/LocalizationProvider';
-import { createCompanyDevice } from '../../common/company';
+import { DeviceLimitError, createCompanyDevice } from '../../common/company';
 import useT from '../../common/useT';
 import { isValidImei } from '../../common/imei';
 import ImeiScanner from './ImeiScanner';
@@ -74,11 +74,15 @@ const InstallationForm = ({ company, onCreated, title }) => {
       onCreated(device);
     } catch (createError) {
       // The IMEI is unique across the whole server, including other companies.
-      setError(
-        /duplicate|unique/i.test(createError.message)
-          ? t('installerDuplicateImei')
-          : createError.message,
-      );
+      if (createError instanceof DeviceLimitError) {
+        setError(`${t('installerLimitReached')} (${createError.limit})`);
+      } else {
+        setError(
+          /duplicate|unique/i.test(createError.message)
+            ? t('installerDuplicateImei')
+            : createError.message,
+        );
+      }
     } finally {
       setSaving(false);
     }

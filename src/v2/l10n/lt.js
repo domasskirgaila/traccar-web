@@ -155,6 +155,7 @@ export default {
   scanChoose: 'Pasirinkite IMEI:',
   scanInvalidHint:
     'Pilki numeriai neatitinka IMEI kontrolinio skaitmens; prieš išsaugodami juos patikrinkite.',
+  installerLimitReached: 'Įmonė pasiekė maksimalų prietaisų skaičių',
   installerNew: 'Nauja instaliacija',
   installerVehicleName: 'Transporto priemonė',
   installerVehicleNameHint: 'Pavadinimas ar valstybinis numeris, kurį matys įmonė',
@@ -215,6 +216,10 @@ export default {
   periodThisMonth: 'Šis mėnuo',
   periodLastMonth: 'Praėjęs mėnuo',
   periodCustom: 'Pasirinktas',
+  usersDeviceLimit: 'Maksimalus prietaisų skaičius',
+  usersDeviceLimitHint: 'Palikite tuščią, jei neribojama',
+  usersDeviceLimitInvalid: 'Įveskite sveikąjį skaičių arba palikite tuščią',
+  usersDeviceLimitShort: 'Prietaisų limitas',
   usersSearch: 'Ieškoti pagal vardą, el. paštą ar įmonę...',
   usersFilterAll: 'Visi',
   usersFilterAdmins: 'SuperAdmin ir Installer',

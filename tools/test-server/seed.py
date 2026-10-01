@@ -158,11 +158,21 @@ def build_spares():
 
 
 class Api:
-    def __init__(self, url):
+    def __init__(self, url, cookie_file=None):
         self.url = url.rstrip('/')
+        self.cookies = http.cookiejar.MozillaCookieJar(cookie_file)
+        if cookie_file and os.path.exists(cookie_file):
+            try:
+                self.cookies.load(ignore_discard=True)
+            except (OSError, http.cookiejar.LoadError):
+                pass
         self.opener = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())
+            urllib.request.HTTPCookieProcessor(self.cookies)
         )
+
+    def save_cookies(self):
+        if self.cookies.filename:
+            self.cookies.save(ignore_discard=True)
 
     def request(self, method, path, body=None, form=None):
         data = None
@@ -202,6 +212,13 @@ class Api:
 
 
 def login(api, settings):
+    # Reuse the previous run's session so the audit log is not filled with a login per minute.
+    try:
+        user = api.get('/api/session')
+        if user and user.get('email') == settings['ADMIN_EMAIL']:
+            return user
+    except RuntimeError:
+        pass
     server = api.get('/api/server')
     if server.get('newServer'):
         api.post('/api/users', {
@@ -210,10 +227,12 @@ def login(api, settings):
             'password': settings['ADMIN_PASSWORD'],
         })
         log(f'created first administrator {settings["ADMIN_EMAIL"]}')
-    return api.request('POST', '/api/session', form={
+    user = api.request('POST', '/api/session', form={
         'email': settings['ADMIN_EMAIL'],
         'password': settings['ADMIN_PASSWORD'],
     })
+    api.save_cookies()
+    return user
 
 
 def ensure_user(api, users_by_email, fields, password):
@@ -470,7 +489,7 @@ def main():
     settings = load_settings()
     companies = build_companies()
     try:
-        seed(Api(settings['API_URL']), settings, companies)
+        seed(Api(settings['API_URL'], os.path.join(HERE, '.session')), settings, companies)
         url = osmand_url(settings)
     except (RuntimeError, OSError, subprocess.CalledProcessError) as error:
         log(f'seeding failed: {error}')

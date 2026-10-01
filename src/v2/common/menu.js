@@ -11,6 +11,7 @@ import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputCompone
 import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import DnsIcon from '@mui/icons-material/Dns';
 import { ADMIN, INSTALLER, SUPERADMIN, USER, allRoles } from './roles';
 
 // Single source for both the sidebar and the route guards, so they cannot disagree.
@@ -52,6 +53,7 @@ export default [
       icon: SettingsInputComponentIcon,
       roles: [SUPERADMIN],
     },
+    { path: 'system', titleKey: 'menuSystem', icon: DnsIcon, roles: [SUPERADMIN] },
   ],
   [{ path: 'settings', titleKey: 'menuSettings', icon: SettingsIcon, roles: allRoles }],
 ];

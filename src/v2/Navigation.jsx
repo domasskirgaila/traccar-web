@@ -30,6 +30,7 @@ const HistoryPage = lazy(() => import('./pages/history/HistoryPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const EventsPage = lazy(() => import('./pages/events/EventsPage'));
 const CommandTemplatesPage = lazy(() => import('./pages/commandTemplates/CommandTemplatesPage'));
+const SystemPage = lazy(() => import('./pages/system/SystemPage'));
 
 const pages = {
   companies: <CompaniesPage />,
@@ -45,6 +46,7 @@ const pages = {
   settings: <SettingsPage />,
   events: <EventsPage />,
   'command-templates': <CommandTemplatesPage />,
+  system: <SystemPage />,
 };
 
 const Navigation = () => {
